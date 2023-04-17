@@ -4,7 +4,9 @@ import path from 'path';
 import { fileURLToPath } from 'url';
 import fs from 'fs';
 import http from 'http';
-import index from './routes/index.js';
+import session from 'express-session';
+
+import { route } from './routes/index.js';
 
 dotenv.config();
 
@@ -18,30 +20,65 @@ const port = process.env.PORT || 9000;
 import { Server } from "socket.io";
 const io = new Server(server);
 
+const sessionLength = (1000 * 60 * 60 * 24) * 7; // 1 day
+
 app.locals.fs = fs;
 
 // SET TEMPLATE ENGINE
 app.set('view engine', 'ejs');
 app.set('views', 'views');
 
+app.use(express.json()) // for parsing application/json
+app.use(express.urlencoded({ extended: true })) // for parsing application/x-www-form-urlencoded
+
 app.use(express.static('public'));
 app.use('/public', express.static(__dirname + '/public/'));
 
-app.use('/', index);
+app.use(session({
+    name: 'chatsession',
+    secret: "chatsecretsessiondata",
+    saveUninitialized:true,
+    cookie: { maxAge: sessionLength },
+    resave: false
+}));
+
+app.use('/', route);
 
 io.on('connection', (socket) => {
-  console.log('a user connected');
+    console.log('User connected');
 
-  socket.on('message', (msg) => {
-    console.log('message: ' + msg);
-    io.emit('message', msg);
-  });
+    const username = socket.username;
+    console.log(username);
+    
+    socket.on('chat message', (msg) => {
+        io.emit('chat message', (username + ': ' + msg));
+    });
+
+    socket.on('disconnect', (reason) => {
+        console.log(reason);
+       
+    });
+
+    socket.on("user joined", ({ username }) => {
+        console.log(`${username} joined the chat`);
+        socket.broadcast.emit("user joined", `${username} joined the chat`);
+    });
 
 });
 
-io.on('disconnect', () => {
+io.on('disconnect', function () {
+    console.log('USER DISCONNECTED?');
+});
 
-    console.log('user disconnected');
+io.use((socket, next) => {
+  const username = socket.handshake.auth.username;
+
+  if (!username) {
+    return next(new Error("invalid username"));
+  }
+
+  socket.username = username;
+  next();
 });
 
 app.get('*', (req, res) => {

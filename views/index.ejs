@@ -1,12 +1,10 @@
-<main>
-    
-    <section class="chat-container">
-
-        <ul data-message-list class="messages"></ul>
-
-        <form class="personal-message" data-chat-form method="POST">
-            <input data-message-input autocomplete="off" />
-            <button class="btn" type="submit">Send</button>
-        </form>
-    </section>
+<main class="onboarding">
+    <h1>Battle Royale: Rock, Paper, Scissors</h1>
+    <form data-nickname-form method="POST">
+        <label for="username">Enter your nickname</label>
+        <input name="username" data-nickname-input autocomplete="off" placeholder="Be creative"/>
+        <button class="btn" type="submit">Enter lobby</button>
+    </form>
 </main>
+
+<script src="/public/onboarding.js" type="module"></script>
