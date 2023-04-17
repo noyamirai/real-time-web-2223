@@ -10,11 +10,11 @@ export default (io, socket) => {
         socket.broadcast.emit("NEW_USER", `${username} joined the chat`);
     })
     
-    socket.on('chat message', (obj) => {
-        io.emit('chat message', {sender: obj.sender, message: obj.message});
+    socket.on('CHAT_MESSAGE', (obj) => {
+        io.emit('CHAT_MESSAGE', {sender: obj.sender, message: obj.message});
     });
 
     socket.on('disconnect', () => {
-        console.log(`${username} disconnected from socket`);
+        socket.broadcast.emit("USER_LEFT", `${username} left the chat`);
     });
 }

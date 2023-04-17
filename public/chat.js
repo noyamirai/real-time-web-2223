@@ -32,10 +32,8 @@ socket.on('NEW_USER', (message) => {
 form.addEventListener('submit', function(e) {
     e.preventDefault();
 
-    console.log(currentUser);
-
     if (input.value) {
-        socket.emit('chat message', {
+        socket.emit('CHAT_MESSAGE', {
             message: input.value,
             sender: currentUser
         });
@@ -45,12 +43,20 @@ form.addEventListener('submit', function(e) {
 
 });
 
-socket.on('chat message', (result) => {
+socket.on('CHAT_MESSAGE', (result) => {
     console.log(result);
 
     const item = document.createElement('li');
     item.textContent = `${result.sender}: ${result.message}`;
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
+})
 
+socket.on('USER_LEFT', (message) => {
+   
+    console.log(message);
+
+    const messageElement = document.createElement("li");
+    messageElement.textContent = message;
+    messages.appendChild(messageElement);
 })

@@ -50,10 +50,6 @@ io.on("connection", (socket) => {
     chatSocket(io, socket);
 });
 
-io.on('disconnect', function () {
-    console.log('USER DISCONNECTED?');
-});
-
 io.use((socket, next) => {
     const username = socket.handshake.auth.username;
 
