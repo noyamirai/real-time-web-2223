@@ -44,26 +44,10 @@ app.use(session({
 
 app.use('/', route);
 
-io.on('connection', (socket) => {
-    console.log('User connected');
+import chatSocket from './sockets.js';
 
-    const username = socket.username;
-    console.log(username);
-    
-    socket.on('chat message', (msg) => {
-        io.emit('chat message', (username + ': ' + msg));
-    });
-
-    socket.on('disconnect', (reason) => {
-        console.log(reason);
-       
-    });
-
-    socket.on("user joined", ({ username }) => {
-        console.log(`${username} joined the chat`);
-        socket.broadcast.emit("user joined", `${username} joined the chat`);
-    });
-
+io.on("connection", (socket) => {
+    chatSocket(io, socket);
 });
 
 io.on('disconnect', function () {
@@ -71,14 +55,14 @@ io.on('disconnect', function () {
 });
 
 io.use((socket, next) => {
-  const username = socket.handshake.auth.username;
+    const username = socket.handshake.auth.username;
 
-  if (!username) {
-    return next(new Error("invalid username"));
-  }
+    if (!username) {
+        return next(new Error("invalid username"));
+    }
 
-  socket.username = username;
-  next();
+    socket.username = username;
+    next();
 });
 
 app.get('*', (req, res) => {

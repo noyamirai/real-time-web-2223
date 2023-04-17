@@ -1,16 +1,15 @@
 // import socket from "./socket.js";
 
-// let loggedIn = false;
+// const usernameForm = document.querySelector('[data-nickname-form]');
+// const usernameInput = document.querySelector('[data-nickname-input]');
 
-// const nicknameForm = document.querySelector('[data-nickname-form]');
-// const nicknameInput = document.querySelector('[data-nickname-input]');
-
-// if (nicknameForm) {
-//     nicknameForm.addEventListener('submit', function(e) {
+// if (usernameForm) {
+//     usernameForm.addEventListener('submit', function(e) {
 //         e.preventDefault();
     
-//         if (nicknameInput.value) {
-//             usernameCreated(nicknameInput.value);
+//         if (usernameInput.value) {
+//             socket.emit('new user', username);
+// //             usernameCreated(usernameInput.value);
 //         }
     
 //     });

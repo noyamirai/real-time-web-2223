@@ -30,6 +30,12 @@ route.get('/username', (req, res) => {
 });
 
 route.get('/lobby', (req, res) => {
+
+    if (!req.session.username) {
+        res.redirect('/');
+        return;
+    }
+
     res.render('layout', {
         'view': 'lobby',
     });

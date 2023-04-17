@@ -5,29 +5,23 @@ const messages = document.querySelector('[data-message-list]');
 const form = document.querySelector('[data-chat-form]');
 const input = document.querySelector('[data-message-input]');
 
-console.log('ENTERED LOBBY');
-
-let loggedUser; 
+let currentUser;
 
 fetch('/username')
 .then(res => res.json())
 .then((result) => {
 
     console.log(result);
+    const username = result.username;
+    currentUser = username;
 
-    // if (!result.connected) {
-        const username = result.username;
-    
-        socket.auth = {username};
-        socket.connect();
+    socket.auth = {username};
+    socket.connect();
 
-        console.log('joined: ', result.username);
-
-        socket.emit("user joined", { username: result.username });
-    // }
+    socket.emit('NEW_USER', username);
 })
 
-socket.on('user joined', (message) => {
+socket.on('NEW_USER', (message) => {
     console.log(message);
 
     const messageElement = document.createElement("li");
@@ -38,18 +32,24 @@ socket.on('user joined', (message) => {
 form.addEventListener('submit', function(e) {
     e.preventDefault();
 
+    console.log(currentUser);
+
     if (input.value) {
-        socket.emit('chat message', input.value);
+        socket.emit('chat message', {
+            message: input.value,
+            sender: currentUser
+        });
+
         input.value = '';
     }
 
 });
 
-socket.on('chat message', (message) => {
-    console.log(message);
+socket.on('chat message', (result) => {
+    console.log(result);
 
     const item = document.createElement('li');
-    item.textContent = message;
+    item.textContent = `${result.sender}: ${result.message}`;
     messages.appendChild(item);
     window.scrollTo(0, document.body.scrollHeight);
 
