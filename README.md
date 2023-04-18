@@ -31,7 +31,7 @@ This game offers the following features (for now):
 
 
 ## :zap: Quickstart
-If you want to start working with us on WFUT, and you have cloned this repo to your desktop, go to its root directory and run `npm install` to install its dependencies.
+If you want to start working with us on this project, or if you just want to take a look at the code, and you have cloned this repo to your desktop, go to its root directory and run `npm install` to install its dependencies.
 
 Now that we are all on the same page, you can run the application with or without [nodemon](https://www.google.com/settings/security/lesssecureapps). 
 
@@ -45,15 +45,11 @@ Running the application with nodemon
 npm run start:dev
 ~~~
 
-Both these prompts will give you access to WFUT via `localhost:9000/`. And That's it! Having trouble? Feel free to let us know by submitting an issue.
+Both these prompts will give you access to the game site via `localhost:9000/`. And That's it! Having trouble? Feel free to let us know by submitting an issue.
 
 ## :memo: Documentation
 
-Learn more about WFUT and dive deeper into this project by reading the [process documentation](./app/docs/productdoc.md).
-
-## :package: Resources
-Our application uses the following recourses:
-- [The Sports DB Api](https://www.thesportsdb.com/api.php)
+Learn more about and dive deeper into this project by reading the [process documentation](./app/docs/productdoc.md).
 
 ## :warning: License
 
