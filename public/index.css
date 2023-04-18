@@ -24,7 +24,7 @@ html { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: 
   --secondary-color: hsl(46, 85%, 60%);
   --accent-color: hsl(269, 77%, 78%);
 
-  --success: hsl(136, 42%, 51%);
+  --success: hsl(148, 68%, 49%);
   --error: hsl(0, 71%, 57%);
 
   --white: hsl(0, 0%, 100%);
@@ -80,6 +80,11 @@ body {
   flex-direction: column;
 
   padding: 0 .75rem;
+}
+
+.lobby {
+  padding: var(--default-padding);
+  background-color: var(--secondary-color);
 }
 /* =============================================================================
   #UTILITIES
@@ -287,7 +292,7 @@ button {
 
   }
 
-  .onboarding input {
+  input {
     width: 100%;
     color: var(--text-color);
     background-color: var(--dark-grey);
@@ -305,7 +310,7 @@ button {
     box-shadow: none;
   }
 
-  .onboarding input::placeholder {
+  input::placeholder {
     color: var(--dark-grey-text);
   }
 
@@ -324,7 +329,6 @@ button {
         transform: translateX(-50%) scale(1.1);
   }
   
-  
   label {
     display: block;
     margin-bottom: .75rem;
@@ -332,3 +336,220 @@ button {
 
     font-size: 1.125rem;
   }
+
+
+.gulag {
+  position: fixed;
+  top: 0;
+  bottom: 0;
+  right: 0;
+
+  color: var(--text-color);
+
+  padding: var(--default-padding);
+
+  height: 100%;
+  width: 25rem;
+
+  display: flex;
+  flex-direction: column;
+  gap: var(--default-padding);
+  font-size: .875rem;
+}
+
+.gulag h1, h2 {
+
+  color: var(--text-color);
+}
+
+  .gulag__header {
+    border-radius: .625rem;
+    height: 10%;
+    background-color: var(--white);
+
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    text-transform: uppercase;
+  }
+
+  .gulag__chat {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 90%;
+
+    border-radius: .625rem;
+
+    padding-bottom: var(--default-padding);
+
+    background-color: var(--white);
+  }
+
+    .gulag__chat__header {
+      padding: 1.25rem;
+
+      border-top-left-radius: .625rem;
+      border-top-right-radius: .625rem;
+      background-color: var(--background-color);
+
+      color: var(--white);
+      text-align: center;
+      font-size: .875rem;
+      margin-bottom: 1.125rem;
+    }
+
+    .gulag__chat__messages {
+      padding: 0 var(--default-padding);
+      display: block;
+      height: 100%;
+      margin-bottom: .875rem;
+    }
+
+    .gulag .form {
+      padding: 0 var(--default-padding) 0 var(--default-padding);
+      position: relative;
+    }
+
+    .btn--send {
+      position: absolute;
+      top: 50%;
+      transform: translateY(-50%);
+      right: calc(1.8rem + 0.4rem);
+
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      margin: 0;
+      padding: 0;
+
+      width: 1.8rem;
+      min-width: 1.8rem;
+      height: 1.8rem;
+      opacity: 100%;
+    }
+
+      .btn--send i {
+        font-size: .8125rem;
+      }
+
+      .gulag input {
+        padding-right: calc(1.8rem + 1rem);
+      }
+
+      .btn--send:disabled {
+        opacity: 0;
+      }
+
+
+  .message {
+
+  }
+
+    .message__sender {
+      display: flex;
+      align-items: center;
+    }
+
+      .message__sender picture {
+        display: inline-block;
+
+        width: 1.5rem;
+        height: 1.5rem;
+
+        margin-right: .475rem;
+
+        border-radius: 1rem;
+        background-color: var(--dark-grey);
+      }
+
+      .message__sender span {
+        font-weight: 700;
+      }
+
+    .message__content {
+      display: inline-block;
+      margin-top: .5rem;
+      border-radius: .3125rem;
+
+      font-weight: 700;
+      color: var(--white);
+      padding: .75rem .875rem;
+
+      background-color: #8DA4B8;
+      max-width: 90%;
+    }
+    
+
+    .message--sent {
+      text-align: right;
+    }
+
+      .message--sent .message__sender {
+        justify-content: flex-end;
+      }
+
+      .message--sent .message__content {
+        background-color: #2B9CFF;
+        margin-left: auto;
+      }
+
+      .message--admin .message__content {
+        background-color: var(--background-color);
+      }
+
+      .message--admin .message__sender span,
+      .message--admin .message__sender i {
+        color: var(--background-color);
+      }
+
+      .message--admin i {
+        margin-left: .375rem;
+      }
+
+    .message + .message, .message + * { 
+      margin-top: 1.125rem;
+    }
+
+
+    .system-notice {
+      text-align: center;
+
+      font-weight: 700;
+      color: var(--dark-grey-text);
+      padding: .75rem 0 ;
+      border-top: 2px solid var(--dark-grey);
+      border-bottom: 2px solid var(--dark-grey);
+    }
+
+    .system-notice + * {
+      margin-top: 1.125rem;
+    }
+
+    .system-notice + .system-notice {
+      margin-top: 0;
+      border-top: none;
+    }
+
+    .system-notice--game {
+
+    }
+
+      .system-notice--game p {
+        padding: .75rem 0 ;
+        background-color: var(--dark-grey);
+        border-radius: .3125rem;
+      }
+
+    .system-notice--game.won, .system-notice--game.fail {
+      color: var(--white);
+    }
+
+    .system-notice--game.won {
+      background-color: var(--success);
+    }
+    .system-notice--game.fail {
+      background-color: var(--error);
+    }

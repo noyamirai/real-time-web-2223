@@ -1,14 +1,78 @@
 <main>
     
-    <section class="chat-container">
+    <article class="gulag">
 
-        <ul data-message-list class="messages"></ul>
+        <header class="gulag__header">
+            <h2>Gulag chat</h2>
+        </header>
 
-        <form class="personal-message" data-chat-form method="POST">
-            <input data-message-input autocomplete="off" />
-            <button class="btn" type="submit">Send</button>
-        </form>
-    </section>
+        <section class="gulag__chat">
+
+            <header class="gulag__chat__header">
+                <p><span>Plasja</span> is the game master this round</p>
+            </header>
+
+            <ul data-message-list class="gulag__chat__messages">
+                <!-- <li class="system-notice">
+                    <p>System notice here</p>
+                </li>
+                <li class="message message--admin">
+                    <div class="message__sender">
+                        <picture>
+                            <img src="" alt="">
+                        </picture>
+
+                        <span>noya</span>
+                        <i class="fa-solid fa-crown"></i>
+                    </div>
+
+                    <div class="message__content">
+                        <p>peeeepoeeepoeepoeopeope</p>
+                    </div>
+                </li>
+                <li class="system-notice">
+                    <p>System notice here</p>
+                </li>
+                <li class="system-notice system-notice--game">
+                    <p>System notice here</p>
+                </li>
+                <li class="message message--sent">
+                    <div class="message__sender">
+                        <picture>
+                            <img src="" alt="">
+                        </picture>
+
+                        <span>noya</span>
+                    </div>
+
+                    <div class="message__content">
+                        <p>peeeepoeeepoeepoeopeope</p>
+                    </div>
+                </li>
+
+                <li class="message">
+                    <div class="message__sender">
+                        <picture>
+                            <img src="" alt="">
+                        </picture>
+
+                        <span>noya</span>
+                    </div>
+
+                    <div class="message__content">
+                        <p>Hiii</p>
+                    </div>
+                </li> -->
+            </ul>
+
+            <form class="form" class="gulag__chatbox" data-chat-form method="POST">
+                <input data-message-input autocomplete="off" placeholder="Start typing..."/>
+                <button class="btn btn--send" type="submit" disabled><i class="fa-solid fa-paper-plane"></i></button>
+            </form>
+
+        </section>
+
+    </article>
 </main>
 
 <script src="/public/chat.js" type="module"></script>

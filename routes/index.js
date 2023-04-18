@@ -9,12 +9,6 @@ route.get('/', (req, res) => {
         'bodyClass': 'onboarding'
     });
 });
-route.get('/typerace', (req, res) => {
-    res.render('layout', {
-        'view': 'typer',
-    });
-});
-
 route.post("/", (req, res) => {
   const postData = req.body;
     req.session.username = postData.username;
@@ -44,6 +38,7 @@ route.get('/lobby', (req, res) => {
 
     res.render('layout', {
         'view': 'lobby',
+        'bodyClass': 'lobby'
     });
 })
 
