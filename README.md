@@ -49,7 +49,7 @@ Both these prompts will give you access to the game site via `localhost:9000/`. 
 
 ## :memo: Documentation
 
-Learn more about and dive deeper into this project by reading the [process documentation](./app/docs/productdoc.md).
+Learn more about and dive deeper into this project by reading the [process documentation](./docs/productdoc.md).
 
 ## :warning: License
 
