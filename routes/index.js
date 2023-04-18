@@ -6,6 +6,12 @@ let username;
 route.get('/', (req, res) => {
     res.render('layout', {
         'view': 'index',
+        'bodyClass': 'onboarding'
+    });
+});
+route.get('/typerace', (req, res) => {
+    res.render('layout', {
+        'view': 'typer',
     });
 });
 

@@ -15,74 +15,31 @@ html { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: 
 *, *:before, *:after { -webkit-box-sizing: inherit; -moz-box-sizing: inherit; box-sizing: inherit; }
 
 /* =============================================================================
-  #FONT FACE
-============================================================================= */
-@font-face {
-  font-family: 'Poppins';
-  src: url('/public/fonts/Poppins-Regular.ttf') format('truetype');
-  font-weight: normal;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Poppins';
-  src: url('/public/fonts/Poppins-Medium.ttf') format('truetype');
-  font-weight: 500;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Poppins';
-  src: url('/public/fonts/Poppins-SemiBold.ttf') format('truetype');
-  font-weight: 600;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Poppins';
-  src: url('/public/fonts/Poppins-Bold.ttf') format('truetype');
-  font-weight: 700;
-  font-style: normal;
-  font-display: swap;
-}
-@font-face {
-  font-family: 'Poppins';
-  src: url('/public/fonts/Poppins-ExtraBold.ttf') format('truetype');
-  font-weight: 800;
-  font-style: normal;
-  font-display: swap;
-}
-
-/* =============================================================================
   #CSS VARIABLES
 ============================================================================= */
 :root {
-  --background-color: #0D0F13;
+  --background-color: hsl(241, 63%, 57%);
 
-  --primary-color: #D11B67;
-  --primary-color-dark: #AD1655;
+  --primary-color: hsl(16, 75%, 53%);
+  --secondary-color: hsl(46, 85%, 60%);
+  --accent-color: hsl(269, 77%, 78%);
 
-  --secondary-color: #33B1E7;
+  --success: hsl(136, 42%, 51%);
+  --error: hsl(0, 71%, 57%);
 
-  --accent-color: #3F1A55;
+  --white: hsl(0, 0%, 100%);
+  --grey: hsl(240, 23%, 95%);
+  --dark-grey: hsl(240, 31%, 94%);
+  --dark-grey-text: hsl(240, 21%, 74%);
+  
+  --text-color: hsl(353, 44%, 4%);
 
-  --success: #4CB669;
-  --error: #DF4343;
-  --white: #FFF;
-  --grey: #191C22;
-  --dark-grey: #D3D2D4;
-  --dark-grey-text: #A5A4A6;
+  --default-padding: 1.5rem;
+  --big-padding: 2.5rem;
 
-  --text-color: #FFF;
+  --default-font: 'Nunito', sans-serif;
 
-  --default-padding: 24px;
-
-  --default-font: 'Poppins', sans-serif;
-
-  --nav-height: 75px;
-
-  --mobile-font-size: 14px;
-  --mobile-font-size-rem: 1.4rem;
+  --border-radius: .3125rem;
 }
 
 /* =============================================================================
@@ -97,9 +54,6 @@ html { -webkit-box-sizing: border-box; -moz-box-sizing: border-box; box-sizing: 
 html {
     min-height: 100%;
     height: 100%;
-
-    font-size: 16px;
-    font-size: 62.5%;
 }
 
 body {
@@ -109,7 +63,7 @@ body {
     min-height: -webkit-fill-available;
 
     font-family: var(--default-font);
-    font-size: var(--mobile-font-size-px); font-size: var(--mobile-font-size-rem);
+    font-size: 1rem;
     color: var(--text-color);
     /* line-height: 1.6; */
   
@@ -117,24 +71,16 @@ body {
     -moz-osx-font-smoothing: grayscale;
 
     background-color: var(--background-color);
-
-    display: flex;
-    /* align-items: center; */
-    justify-content: center;
 }
 
-body.error {
+.onboarding {
   display: flex;
   align-items: center;
   justify-content: center;
-  text-align: center;
+  flex-direction: column;
 
-  font-size: 16px; font-size: 1.6rem;
+  padding: 0 .75rem;
 }
-
-  body.error main {
-    width: 100%;
-  }
 /* =============================================================================
   #UTILITIES
 ============================================================================= */
@@ -148,20 +94,15 @@ body.error {
 .ta-center { text-align: center; }
 .ta-right { text-align: right; }
 
-.solid-body {
-  border-radius: 7px;
-  padding: 18px;
-  background-color: #22242c;
-}
 
 hr {
-  margin: 20px 0;
+  margin: 1.25rem 0;
 
-  height: 4px;
+  height: .25rem;
 
   background-color: #21242C;
   border: none;
-  border-radius: 5px;
+  border-radius: .3125rem;
 }
 /* =============================================================================
   #TYPOGRAPHY
@@ -170,47 +111,93 @@ h1, h2, h3, h4, h5, h6 {
   margin-top: 0;
   line-height: 1.1;
 
-  font-weight: 800;
-  color: var(--text-color);
+  font-weight: 900;
+  color: var(--white);
+}
+
+h1 {
+  font-size: 2rem;
 }
 
 h1 + * {
-  margin-top: 12px;
+  margin-top: .75rem;
 }
 
 p + p {
-  margin-top: 12px;
+  margin-top: .75rem;
+}
+/* =============================================================================
+  #HEADER
+============================================================================= */
+.title-header {
+  position: relative;
+  text-align: center;
 }
 
-h2 {
-  font-size: 20px;
-  font-size: 2.0rem;
-  text-transform: uppercase;
-  margin-bottom: 18px;
+  .tag {
+    display: inline-block;
+
+    text-transform: uppercase;
+    font-weight: 800;
+    color: var(--white);
+    font-size: 1.125rem;
+
+    padding: .5rem .75rem;
+    border-radius: var(--border-radius);
+
+    background-color: var(--text-color);
+  }
+
+  .tag + * {
+    margin-top: .75rem;
+  }
+
+.title-header + * {
+  margin-top: 1.5rem;
 }
 
 /* =============================================================================
   #MAIN
 ============================================================================= */
 main {
-  padding: 40px;
-  max-width: 520px;
   width: 100%;
   min-height: 100%;
+}
 
-  /* background-color: pink; */
+.onboarding main {
+    max-width: 28rem;
+}
+
+  .onboarding form {
+    padding: var(--default-padding) 1.875rem;
+    border-radius: .625rem;
+    background-color: var(--white);
+  }
+
+    .form--toggle {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+      .form--toggle .btn + .btn {
+        margin: 0;
+      }
+
+.onboarding form + form { 
+  margin-top: var(--default-padding);
 }
 
 section + section { margin-top: 24px; }
 
-.onboarding {
+/* .onboarding {
   display: flex;
   align-items: center;
   justify-content: center;
   flex-direction: column;
 
   text-align: center;
-}
+} */
 
 /* =============================================================================
   #BUTTON
@@ -233,36 +220,115 @@ button {
   align-items: center;
   justify-content: center;
 
-  padding: 6px 8px;
-  border-radius: 3px;
+  padding: .625rem 1.25rem;
+  border-radius: 3.125rem;
   width: 100%;
 
-  background-color: #5800ff;
-  color: #10ffc4;
+  background-color: var(--primary-color);
+  color: var(--white);
 
+  text-transform: uppercase;
   text-decoration: none;
 
-  font-weight: 600;
+  font-weight: 800;
+  font-size: 1.125rem;
 
-  min-width: 100px;
+  min-width: 6.25rem;
+
+  transition: all 250ms ease-in-out;
+}
+
+
+.btn--nav {
+  width: auto;
+  display: inline-block;
+  padding: 0;
+  min-width: auto;
+  color: var(--dark-grey-text);
+  background-color: transparent;
+  font-size: 1rem;
+}
+
+.btn--nav.active {
+  position: relative;
+  color: var(--primary-color);
+}
+
+.btn--nav.active::before {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: -0.325rem;
+
+  background-color: var(--primary-color);
+  height: .1875rem;
+  border-radius: .1875rem;
 }
 
 * + .btn {
   margin-top: .75rem;
 }
+
+.btn:hover {
+  transform: scale(1.1);
+}
 /* =============================================================================
   #FORM STUFF
 ============================================================================= */
-.onboarding form {
+.onboarding .form[data-nickname-form] {
+  position: relative;
   width: 100%;
+
+  padding-bottom: calc(1.5rem + 1.125rem);
 }
+
+  .onboarding .form--toggle {
+
+  }
 
   .onboarding input {
     width: 100%;
-    text-align: center;
-    color: #0D0F13;
+    color: var(--text-color);
+    background-color: var(--dark-grey);
+    font-weight: 700;
+
+    font-size: 1rem;
+
+    padding: .875rem .75rem;
+    border-radius: var(--border-radius);
+
+    border:none;
+    background-image:none;
+    -webkit-box-shadow: none;
+    -moz-box-shadow: none;
+    box-shadow: none;
   }
+
+  .onboarding input::placeholder {
+    color: var(--dark-grey-text);
+  }
+
+  .onboarding .form[data-nickname-form] button[type="submit"] {
+    position: absolute;
+    bottom: -1.125rem;
+    left: 50%;
+
+    margin: 0;
+
+    width: auto;
+    transform: translateX(-50%);
+  }
+
+  .onboarding .form[data-nickname-form] button[type="submit"]:hover {
+        transform: translateX(-50%) scale(1.1);
+  }
+  
+  
   label {
     display: block;
-    margin-bottom: 1rem;
+    margin-bottom: .75rem;
+    font-weight: 700;
+
+    font-size: 1.125rem;
   }
