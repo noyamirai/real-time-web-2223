@@ -20,9 +20,9 @@ This game offers the following features (for now):
 |-------------------------------|--------------------|
 | Chat with others              | :white_check_mark: |
 | Enter chat with username      | :white_check_mark: |
-| Create game room        | :hourglass: |
-| Share game room key                | :hourglass:        |
-| Enter game room via key      | :hourglass: |
+| Create game room        | :white_check_mark: |
+| Share game room key                | :white_check_mark:        |
+| Enter game room via key      | :white_check_mark: |
 | Game master selects 1v1 victim                 | :hourglass:        |
 | Play rock paper scissors                 | :hourglass:        |
 | Use power-ups                 | :hourglass:        |
