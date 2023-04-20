@@ -1,11 +1,11 @@
 import express from 'express';
 import RoomController from '../controllers/RoomController.js';
-const route = express.Router();
+const onboardingRoute = express.Router();
 
 let username;
 const roomController = new RoomController();
 
-route.get('/', (req, res) => {
+onboardingRoute.get('/', (req, res) => {
 
     let type = 'join-game';
 
@@ -20,7 +20,7 @@ route.get('/', (req, res) => {
     });
 });
 
-route.post("/", (req, res) => {
+onboardingRoute.post("/", (req, res) => {
     const postData = req.body;
 
     // Switching tabs in case JS doesn't work for whatever reason
@@ -57,7 +57,7 @@ route.post("/", (req, res) => {
     res.redirect("/lobby");
 });
 
-route.get('/user', (req, res) => {
+onboardingRoute.get('/user', (req, res) => {
     req.session.connected = req.session.loggedIn ?? false;
 
     const resultObj  = {
@@ -71,30 +71,4 @@ route.get('/user', (req, res) => {
     res.send(resultObj);
 });
 
-route.get('/lobby', (req, res) => {
-
-    if (!req.session.username || !req.session.room_code) {
-        res.redirect('/');
-        return;
-    }
-
-    res.render('layout', {
-        'view': 'lobby',
-        'roomCode': req.session.room_code,
-        'bodyClass': 'lobby'
-    });
-})
-
-route.post('/set_admin', (req, res) => {
-    const adminUser = req.query.u;
-
-    if (adminUser != req.session.username) {
-        res.json({success: false});
-        return;
-    }
-
-    req.session.isAdmin = true;
-    res.json({success: true});
-});
-
-export {route, username };
+export { onboardingRoute };

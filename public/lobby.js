@@ -42,8 +42,11 @@ socket.on('NEW_USER', (message) => {
 
 socket.on('SET_ADMIN', (username) => {
 
-    fetch(`/set_admin?u=${username}`, {
-        method: 'POST'
+    fetch(`/set/admin`, {
+        method: 'POST',
+        body: {
+            'username': username
+        }
     })
     .then( res => res.json())
     .then((adminSet) => {

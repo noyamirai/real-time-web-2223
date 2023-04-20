@@ -6,7 +6,10 @@ import fs from 'fs';
 import http from 'http';
 import session from 'express-session';
 
-import { route } from './routes/index.js';
+import { onboardingRoute } from './routes/onboarding.js';
+import { lobbyRoute } from './routes/lobby.js';
+import { settingsRoute } from './routes/settings.js';
+
 import chatSocket from './sockets.js';
 
 dotenv.config();
@@ -43,7 +46,9 @@ app.use(session({
     resave: false
 }));
 
-app.use('/', route);
+app.use('/', onboardingRoute);
+app.use('/lobby', lobbyRoute);
+app.use('/set', settingsRoute);
 
 io.on("connection", (socket) => {
     chatSocket(io, socket);
@@ -59,7 +64,7 @@ io.use((socket, next) => {
     if (!roomCode) {
         return next(new Error("invalid roomcode"));
     }
-    
+
     socket.username = username;
     socket.roomCode = roomCode;
 
