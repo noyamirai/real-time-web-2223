@@ -7,6 +7,7 @@ import http from 'http';
 import session from 'express-session';
 
 import { route } from './routes/index.js';
+import chatSocket from './sockets.js';
 
 dotenv.config();
 
@@ -44,20 +45,24 @@ app.use(session({
 
 app.use('/', route);
 
-import chatSocket from './sockets.js';
-
 io.on("connection", (socket) => {
     chatSocket(io, socket);
 });
 
 io.use((socket, next) => {
     const username = socket.handshake.auth.username;
+    const roomCode = socket.handshake.auth.roomCode;
 
     if (!username) {
         return next(new Error("invalid username"));
     }
-
+    if (!roomCode) {
+        return next(new Error("invalid roomcode"));
+    }
+    
     socket.username = username;
+    socket.roomCode = roomCode;
+
     next();
 });
 

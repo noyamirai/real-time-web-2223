@@ -2,12 +2,27 @@
 
 <main>
     
-    <form class="form form--toggle" data-form-type action="GET">
-        <button class="btn btn--nav active" type="submit" data-form-type-btn value="join-game">Join game</button>
-        <button class="btn btn--nav" type="submit" data-form-type-btn value="create-game">Create game</button>
+    <form class="form form--toggle" data-form-type method="POST">
+        <button class="btn btn--nav <%= toggleType == 'join-game' ? 'active' : '' %>" type="submit" data-form-type-btn name="toggle"  value="join-game">Join game</button>
+        <button class="btn btn--nav <%= toggleType == 'create-game' ? 'active' : '' %>" type="submit" data-form-type-btn name="toggle" value="create-game">Create game</button>
     </form>
 
-    <form class="form" data-nickname-form method="POST">
+    <form class="form form--game-setup <%= toggleType == 'create-game' ? 'hide' : '' %>" data-game-form method="POST">
+        <input type="hidden" name="form_type" value="join">
+        
+        <label for="room_code">Room code:</label>
+        <input name="room_code" data-room_key-input autocomplete="off" placeholder="ABC2023"/>
+
+        <hr>
+
+        <label for="username">Username:</label>
+        <input name="username" data-nickname-input autocomplete="off" placeholder="Ideas: stinky, peepo, b00b3nj0yer"/>
+        <button class="btn" type="submit">Let me in</button>
+    </form>
+    
+    <form class="form form--game-setup <%= toggleType == 'join-game' ? 'hide' : '' %>" data-nickname-form method="POST">
+        <input type="hidden" name="form_type" value="create">
+
         <label for="username">Username:</label>
         <input name="username" data-nickname-input autocomplete="off" placeholder="Ideas: stinky, peepo, b00b3nj0yer"/>
         <button class="btn" type="submit">Let me in</button>

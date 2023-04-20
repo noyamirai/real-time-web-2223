@@ -65,12 +65,38 @@ body {
     font-family: var(--default-font);
     font-size: 1rem;
     color: var(--text-color);
-    /* line-height: 1.6; */
+
+    overflow: hidden;
   
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
 
     background-color: var(--background-color);
+}
+
+body::before {
+  content: "";
+  position: absolute;
+  inset: 0;
+
+  background-image: url('/public/images/rps-pattern.svg');
+  background-position: center;
+  background-repeat: repeat;
+  background-size: contain;
+  scale: 1.05;
+  /* background-color: hsl(0, 0%, 100%, .15);
+  -webkit-mask-image: url('/public/images/rps-pattern.svg');
+  mask-image: url('/public/images/rps-pattern.svg'); */
+  z-index: 25;
+}
+
+.onboarding::before {
+  opacity: 60%;
+}
+
+body > * {
+  position: relative;
+  z-index: 50;
 }
 
 .onboarding {
@@ -82,7 +108,12 @@ body {
   padding: 0 .75rem;
 }
 
+.lobby::before {
+    background-image: url('/public/images/rps-pattern-yellow.svg');
+}
+
 .lobby {
+  display: flex;
   padding: var(--default-padding);
   background-color: var(--secondary-color);
 }
@@ -103,9 +134,9 @@ body {
 hr {
   margin: 1.25rem 0;
 
-  height: .25rem;
+  height: .2rem;
 
-  background-color: #21242C;
+  background-color: var(--grey);
   border: none;
   border-radius: .3125rem;
 }
@@ -167,6 +198,11 @@ p + p {
 main {
   width: 100%;
   min-height: 100%;
+}
+
+.lobby main {
+  min-height: 100%;
+  width: calc(100% - 25rem);
 }
 
 .onboarding main {
@@ -281,7 +317,7 @@ button {
 /* =============================================================================
   #FORM STUFF
 ============================================================================= */
-.onboarding .form[data-nickname-form] {
+.onboarding .form--game-setup {
   position: relative;
   width: 100%;
 
@@ -314,7 +350,7 @@ button {
     color: var(--dark-grey-text);
   }
 
-  .onboarding .form[data-nickname-form] button[type="submit"] {
+  .onboarding .form--game-setup button[type="submit"] {
     position: absolute;
     bottom: -1.125rem;
     left: 50%;
@@ -325,7 +361,7 @@ button {
     transform: translateX(-50%);
   }
 
-  .onboarding .form[data-nickname-form] button[type="submit"]:hover {
+  .onboarding .form--game-setup button[type="submit"]:hover {
         transform: translateX(-50%) scale(1.1);
   }
   
@@ -346,14 +382,14 @@ button {
 
   color: var(--text-color);
 
-  padding: var(--default-padding);
+  padding: var(--default-padding) var(--default-padding) var(--default-padding) 0;
 
   height: 100%;
   width: 25rem;
 
   display: flex;
   flex-direction: column;
-  gap: var(--default-padding);
+  /* gap: var(--default-padding); */
   font-size: .875rem;
 }
 
@@ -364,15 +400,28 @@ button {
 
   .gulag__header {
     border-radius: .625rem;
-    height: 10%;
+    min-height: 10%;
     background-color: var(--white);
 
     display: flex;
     align-items: center;
     justify-content: center;
+
+    flex-direction: column;
+
     text-align: center;
     text-transform: uppercase;
   }
+
+    .gulag__header p {
+      color: var(--white);
+      margin-top: .1875rem;
+      font-weight: 700;
+      border-radius: .225rem;
+      font-size: .775rem;
+      padding: .1875rem .375rem;
+      background-color: var(--background-color);
+    }
 
   .gulag__chat {
     position: relative;
@@ -388,28 +437,88 @@ button {
   }
 
     .gulag__chat__header {
+
+      min-height: 3.375rem;
+      
       padding: 1.25rem;
 
       border-top-left-radius: .625rem;
       border-top-right-radius: .625rem;
-      background-color: var(--background-color);
+      background-color: var(--primary-color);
 
       color: var(--white);
       text-align: center;
       font-size: .875rem;
-      margin-bottom: 1.125rem;
+      /* margin-bottom: 1.125rem; */
     }
+
+      .gulag__chat__header span {
+        padding: .1rem .275rem;
+        border-radius: .225rem;
+        margin-right: .1rem;
+        font-weight: 700;
+        color: var(--primary-color);
+        background-color: var(--white);
+      }
 
     .gulag__chat__messages {
       padding: 0 var(--default-padding);
       display: block;
       height: 100%;
       margin-bottom: .875rem;
+      overflow-y: scroll;
+
+      padding-top: .875rem;
     }
 
     .gulag .form {
       padding: 0 var(--default-padding) 0 var(--default-padding);
       position: relative;
+    }
+
+
+    .game {
+      position: relative;
+      height: 100%;
+      /* width: 75rem; */
+    }
+
+    .game--select {
+      display: flex;
+      align-items: flex-end;
+      justify-content: space-around;
+    }
+
+      .game__character {
+        margin-bottom: -2.2rem;
+      }
+
+        .game__character.game__character--paper {
+          margin-left: .8rem;
+        }
+
+
+        .game__character > img {
+          width: 80%;
+          margin-top: var(--big-padding);
+        }
+
+        .game__character.game__character--scissors .btn {
+          margin-left: .7rem;
+        }
+
+        .game__character .btn {
+          min-width: auto;
+          width: auto;
+          font-size: 1.4rem;
+          margin: 0;
+          background-color: var(--background-color);
+        }
+
+    .game--message {
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .btn--send {
@@ -418,6 +527,7 @@ button {
       transform: translateY(-50%);
       right: calc(1.8rem + 0.4rem);
 
+      background-color: var(--background-color);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -552,4 +662,17 @@ button {
     }
     .system-notice--game.fail {
       background-color: var(--error);
+    }
+
+    .game .system-notice {
+      border: none;
+      color: var(--white);
+      font-size: 1.25rem;
+      text-transform: uppercase;
+      font-weight: 800;
+      padding: 1rem .75rem;
+      border-radius: .425rem;
+
+      max-width: 60%;
+      background-color: var(--background-color);
     }

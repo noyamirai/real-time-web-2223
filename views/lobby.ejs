@@ -1,19 +1,56 @@
 <main>
+
+    <article class="game game--select">
+
+        <!-- <div class="system-notice">
+            <p>Waiting for game master to start</p>
+        </div> -->
+
+        <div class="game__character game__character--rock">
+            <button class="btn">Select</button>
+            <img src="/public/images/rock.svg" alt="">
+        </div>
+        <div class="game__character game__character--paper">
+            <button class="btn">Select</button>
+            <img src="/public/images/paper.svg" alt="">
+        </div>
+        <div class="game__character game__character--scissors">
+            <button class="btn">Select</button>
+            <img src="/public/images/scissors.svg" alt="">
+        </div>
+
+    </article>
     
     <article class="gulag">
 
         <header class="gulag__header">
             <h2>Gulag chat</h2>
+            <p><%= roomCode %></p>
         </header>
 
         <section class="gulag__chat">
 
             <header class="gulag__chat__header">
-                <p><span>Plasja</span> is the game master this round</p>
+                <p data-admin-username></p>
             </header>
 
             <ul data-message-list class="gulag__chat__messages">
-                <!-- <li class="system-notice">
+                
+            </ul>
+
+            <form class="form" class="gulag__chatbox" data-chat-form method="POST">
+                <input data-message-input autocomplete="off" placeholder="Start typing..."/>
+                <button class="btn btn--send" type="submit" disabled><i class="fa-solid fa-paper-plane"></i></button>
+            </form>
+
+        </section>
+
+    </article>
+</main>
+
+<script src="/public/chat.js" type="module"></script>
+
+<!-- <li class="system-notice">
                     <p>System notice here</p>
                 </li>
                 <li class="message message--admin">
@@ -63,16 +100,3 @@
                         <p>Hiii</p>
                     </div>
                 </li> -->
-            </ul>
-
-            <form class="form" class="gulag__chatbox" data-chat-form method="POST">
-                <input data-message-input autocomplete="off" placeholder="Start typing..."/>
-                <button class="btn btn--send" type="submit" disabled><i class="fa-solid fa-paper-plane"></i></button>
-            </form>
-
-        </section>
-
-    </article>
-</main>
-
-<script src="/public/chat.js" type="module"></script>

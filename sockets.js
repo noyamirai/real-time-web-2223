@@ -1,20 +1,33 @@
-
 export default (io, socket) => {
     
     const username = socket.username;
-    console.log(username);
-    console.log(`${username} connected to socket`);
+    const roomCode = socket.roomCode;
 
-    socket.on('NEW_USER', (username) => {
-        console.log(`${username} has joined the chat! ✋`);
-        socket.broadcast.emit("NEW_USER", `${username} joined the chat`);
-    })
+    console.log(`${username} connected to socket via ${roomCode}`);
+
+    socket.on('JOIN_ROOM', () => {
+        socket.join(`${roomCode}`);
+
+        const room = io.sockets.adapter.rooms.get(roomCode);
+        const numUsers = room ? room.size : 0;
+
+        if (numUsers == 1) {
+            io.to(`${roomCode}`).emit('SET_ADMIN', username);
+        }
+
+        console.log(`${username} has joined the ${roomCode} chat! ✋`);
+        socket.broadcast.to(`${roomCode}`).emit('NEW_USER', `${username} joined the chat`);
+    });
     
     socket.on('CHAT_MESSAGE', (obj) => {
-        io.emit('CHAT_MESSAGE', {sender: obj.sender, message: obj.message});
+        io.to(`${roomCode}`).emit('CHAT_MESSAGE', {sender: obj.sender, message: obj.message});
     });
 
     socket.on('disconnect', () => {
-        socket.broadcast.emit("USER_LEFT", `${username} left the chat`);
+        socket.leaveAll();
+
+        // TODO: when to delete room?
+
+        socket.broadcast.to(`${roomCode}`).emit("USER_LEFT", `${username} left the chat`);
     });
 }

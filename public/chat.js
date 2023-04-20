@@ -7,22 +7,28 @@ const input = document.querySelector('[data-message-input]');
 const submitMessageBtn = document.querySelector('.btn--send');
 
 let currentUser;
+let currentRoom;
 
-fetch('/username')
+fetch('/user')
 .then(res => res.json())
 .then((result) => {
 
     console.log(result);
     const username = result.username;
-    currentUser = username;
+    const roomCode = result.room_code;
 
-    socket.auth = {username};
+    currentUser = username;
+    currentRoom = roomCode;
+
+    socket.auth = { username: username, roomCode: roomCode };
     socket.connect();
 
-    socket.emit('NEW_USER', username);
+    socket.emit('JOIN_ROOM');
 })
 
 socket.on('NEW_USER', (message) => {
+    console.log(message);
+
     const htmlString = `
         <p>${message}</p>
     `;
@@ -32,6 +38,23 @@ socket.on('NEW_USER', (message) => {
     messageElement.innerHTML = htmlString;
 
     messages.appendChild(messageElement);
+});
+
+socket.on('SET_ADMIN', (username) => {
+
+    fetch(`/set_admin?u=${username}`, {
+        method: 'POST'
+    })
+    .then( res => res.json())
+    .then((adminSet) => {
+        if (adminSet) {
+            const adminUserSpan = document.querySelector('[data-admin-username]');
+            adminUserSpan.innerHTML = `<span data-admin-username>${username}</span> is the game master this round`;
+
+            console.log('user became admin');
+        }
+    });
+
 });
 
 form.addEventListener('submit', function(e) {
@@ -79,7 +102,7 @@ socket.on('CHAT_MESSAGE', (result) => {
 
     item.innerHTML = htmlString;
     messages.appendChild(item);
-    window.scrollTo(0, document.body.scrollHeight);
+    messages.scrollTop = messages.scrollHeight;
 })
 
 socket.on('USER_LEFT', (message) => {
