@@ -1,22 +1,24 @@
 <main>
 
-    <article class="game game--select">
+    <article class="game" data-game-board>
+        <!-- game--select game--message -->
 
-        <!-- <div class="system-notice">
-            <p>Waiting for game master to start</p>
-        </div> -->
+        <div data-default_user-ui data-admin_user-ui class="system-notice hide" id="game_message">
+        </div>
 
-        <div class="game__character game__character--rock">
-            <button class="btn">Select</button>
-            <img src="/public/images/rock.svg" alt="">
-        </div>
-        <div class="game__character game__character--paper">
-            <button class="btn">Select</button>
-            <img src="/public/images/paper.svg" alt="">
-        </div>
-        <div class="game__character game__character--scissors">
-            <button class="btn">Select</button>
-            <img src="/public/images/scissors.svg" alt="">
+        <div data-default_user-ui class="game__characters hide" id="character_select">
+            <div data-character-select-container class="game__character game__character--rock">
+                <button class="btn">Select</button>
+                <img src="/public/images/rock.svg" alt="">
+            </div>
+            <div data-character-select-container class="game__character game__character--paper">
+                <button class="btn">Select</button>
+                <img src="/public/images/paper.svg" alt="">
+            </div>
+            <div data-character-select-container class="game__character game__character--scissors">
+                <button class="btn">Select</button>
+                <img src="/public/images/scissors.svg" alt="">
+            </div>
         </div>
 
     </article>

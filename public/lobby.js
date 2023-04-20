@@ -7,6 +7,8 @@ const submitMessageBtn = document.querySelector('.btn--send');
 
 let currentUser;
 let currentRoom;
+let allUsersInRoom;
+let gameStarted = false;
 
 fetch('/user')
 .then(res => res.json())
@@ -36,13 +38,50 @@ socket.on('SET_ADMIN', (username) => {
     .then( res => res.json())
     .then((adminSet) => {
         if (adminSet) {
+            console.log('set admin ui');
             const adminUserSpan = document.querySelector('[data-admin-username]');
             adminUserSpan.innerHTML = `<span data-admin-username>${username}</span> is the game master this round`;
-            console.log('user became admin');
+
+            // TODO: make dynamic (ability to trigger this ui on other situations)
+            // Show empty message if game hasnt started and theres only 1 player
+            if (!gameStarted && Object.keys(allUsersInRoom).length == 1) {
+
+                const gameBoard = document.querySelector('[data-game-board]');
+                gameBoard.classList.add('game--message');
+
+                const gameMessageEl = document.querySelector('#game_message');
+                const textEl = document.createElement('p');
+                const text = 'Invite friends';
+
+                textEl.innerHTML = text;
+                gameMessageEl.appendChild(textEl);
+                gameMessageEl.classList.remove('hide');
+            }
 
             // TODO: show admin controls
         }
     });
+
+});
+
+socket.on('ROOM_USERS', (users) => {
+    allUsersInRoom = users;
+})
+
+socket.on('SET_DEFAULT_USER', (username) => {
+
+    if (!gameStarted) {
+        const gameBoard = document.querySelector('[data-game-board]');
+        gameBoard.classList.add('game--message');
+
+        const gameMessageEl = document.querySelector('#game_message');
+        const textEl = document.createElement('p');
+        const text = 'Waiting for game master to start';
+
+        textEl.innerHTML = text;
+        gameMessageEl.appendChild(textEl);
+        gameMessageEl.classList.remove('hide');
+    }
 
 });
 
