@@ -16,11 +16,11 @@ export default (io, socket) => {
         }
 
         console.log(`${username} has joined the ${roomCode} chat! ✋`);
-        socket.broadcast.to(`${roomCode}`).emit('NEW_USER', `${username} joined the chat`);
+        socket.broadcast.to(`${roomCode}`).emit('MESSAGE_IN_CHAT', { type: 'system_message', message: `${username} joined the chat` });
     });
     
     socket.on('CHAT_MESSAGE', (obj) => {
-        io.to(`${roomCode}`).emit('CHAT_MESSAGE', {sender: obj.sender, message: obj.message});
+        io.to(`${roomCode}`).emit('MESSAGE_IN_CHAT', { type: 'chat_message', sender: obj.sender, message: obj.message});
     });
 
     socket.on('disconnect', () => {
@@ -28,6 +28,6 @@ export default (io, socket) => {
 
         // TODO: when to delete room?
 
-        socket.broadcast.to(`${roomCode}`).emit("USER_LEFT", `${username} left the chat`);
+        socket.broadcast.to(`${roomCode}`).emit("MESSAGE_IN_CHAT", { type: 'system_message', message: `${username} left the chat` });
     });
 }
