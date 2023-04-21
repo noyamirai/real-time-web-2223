@@ -7,6 +7,8 @@
         <button class="btn btn--nav <%= toggleType == 'create-game' ? 'active' : '' %>" type="submit" data-form-type-btn name="toggle" value="create-game">Create game</button>
     </form>
 
+    <!-- TODO: refactor game forms to be one singular form -->
+
     <form class="form form--game-setup <%= toggleType == 'create-game' ? 'hide' : '' %>" data-game-form method="POST">
         <input type="hidden" name="form_type" value="join">
         
