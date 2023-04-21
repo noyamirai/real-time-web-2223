@@ -20,16 +20,10 @@ export default (io, socket) => {
         const room = io.sockets.adapter.rooms.get(roomCode);
         const numUsers = room ? room.size : 0;
 
-        // TODO: emit only for current socket
         if (numUsers == 1) {
-            console.log(users);
-            console.log(socket.id);
-            console.log('emit: SET_ADMIN');
-            socket.to(socket.id).emit('SET_ADMIN', username); //sending to individual socketid
-
-            // socket.to(`${roomCode}`).emit('SET_ADMIN', username);
+            socket.emit('SET_ADMIN', username);
         } else {
-            socket.to(`${roomCode}`).emit('SET_DEFAULT_USER', username);
+            socket.emit('SET_DEFAULT_USER', username);
         }
 
         console.log(`${username} has joined the ${roomCode} chat! ✋`);
