@@ -38,7 +38,6 @@ export default (io, socket) => {
         socket.leaveAll();
 
         // TODO: when to delete room?
-
         delete users[socket.id];
 
         socket.broadcast.to(`${roomCode}`).emit("MESSAGE_IN_CHAT", { type: 'system_message', message: `${username} left the chat` });
