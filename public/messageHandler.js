@@ -35,6 +35,7 @@ function getMessageHtml(data) {
 
     if (data.type == 'chat_message') {
 
+        const messageContent = document.createElement('div');
         const allInsertedListItems = messages.querySelectorAll('li');
         const lastItem = allInsertedListItems[allInsertedListItems.length-1];
 
@@ -50,11 +51,11 @@ function getMessageHtml(data) {
             `;
         }
 
-        htmlString += `
-            <div class="message__content">
-                <p>${data.message}</p>
-            </div>
-        `;
+        messageContent.classList.add('message__content');
+        messageContent.textContent = data.message;
+
+        htmlString += messageContent.outerHTML;
+
     } else {
         htmlString = `
             <p>${data.message}</p>

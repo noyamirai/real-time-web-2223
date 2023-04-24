@@ -593,6 +593,7 @@ button {
 
       font-weight: 700;
       color: var(--white);
+      overflow-wrap: break-word;
       padding: .75rem .875rem;
 
       background-color: #8DA4B8;
