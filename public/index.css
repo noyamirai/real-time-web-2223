@@ -497,6 +497,10 @@ button {
       transition: all 250ms ease-in-out;
     }
 
+    .message__sender .avatar::before {
+      display: none;
+    }
+
     .avatar:hover {
       transform: scale(1.1);
     }
@@ -585,6 +589,7 @@ button {
 
   display: flex;
   flex-direction: column;
+  justify-content: space-between;
   /* gap: var(--default-padding); */
   font-size: .875rem;
 }
@@ -623,8 +628,8 @@ button {
     position: relative;
     display: flex;
     flex-direction: column;
-    height: 90%;
-
+    /* height: 90%; */
+    height: calc(90% - 1.5rem);
     border-radius: .625rem;
 
     padding-bottom: var(--default-padding);

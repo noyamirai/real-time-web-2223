@@ -2,6 +2,12 @@ import fs from 'fs';
 
 class RoomController {
 
+    constructor() {
+        this.isConnected = true;
+        this.roomObject = {};
+
+    }
+
     getRoomCode = () => {
         const roomCode = this.generateRoomCode();        
         return roomCode;
@@ -51,12 +57,65 @@ class RoomController {
         return false;
     }
 
+    deleteRoomFromJson = (code) => {
+        const codeFile = JSON.parse(fs.readFileSync('./src/rooms.json'));
+
+        const currentRooms = codeFile.rooms;
+
+        let index = currentRooms.indexOf(code);
+
+        if (index !== -1) {
+            currentRooms.splice(index, 1);
+        }
+
+        fs.writeFile('./src/rooms.json', JSON.stringify({ rooms: currentRooms }), (err) => {
+            if (err) throw err;
+            console.log('Room code deleted from file!');
+        });
+
+    }
+
     listRoomUsers = (roomObject) => {
         const usernamesInRoom = Object.keys(roomObject).map(key => {
             return roomObject[key].username
         });   
 
         return usernamesInRoom;
+    }
+
+    getAdmin = (allUsers) => {
+        const adminKey = Object.keys(allUsers).filter(key => allUsers[key].is_admin);
+        return allUsers[adminKey];
+    }
+
+    setConnectionState = (bool) => {
+        this.isConnected = bool;
+    };
+
+    getConnectionState = () => {
+        return this.isConnected;
+    }
+
+    roomUsersBackup = (roomObject) => {
+        this.roomObject = roomObject;
+    }
+
+    getRoomUsersBackup = () => {
+        return this.roomObject;
+    }
+
+    wasAdminBefore = (username) => {
+
+        if (Object.keys(this.roomObject).length > 0) {
+            return this.roomObject[username].is_admin;
+        }
+
+        return false;
+
+    }
+
+    getUserFromBackup = (username) => {
+        return this.roomObject[username];
     }
 }
 

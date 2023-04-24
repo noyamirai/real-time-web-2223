@@ -17,7 +17,6 @@ fetch('/user')
 .then(res => res.json())
 .then((result) => {
 
-    console.log(result);
     const username = result.username;
     const roomCode = result.room_code;
     const avatar = result.avatar_url;
@@ -26,10 +25,14 @@ fetch('/user')
     currentRoom = roomCode;
     avatarUrl = avatar;
 
+    console.log(result);
+
     socket.auth = { username: username, roomCode: roomCode, avatarUrl: avatarUrl };
     socket.connect();
 
-    socket.emit('JOIN_ROOM');
+    socket.emit('JOIN_ROOM', result.connected);
+
+
 })
 
 socket.on('SET_ADMIN', (username) => {
@@ -104,11 +107,26 @@ socket.on('SET_DEFAULT_USER', (username) => {
         gameMessageEl.classList.remove('hide');
     }
 
+    setTimeout(() => {
+        const loaderEl = document.querySelector('[data-loader]');
+        const mainEl = document.querySelector('[data-game-lobby]');
+        const bodyEl = document.querySelector('body');
+
+        mainEl.classList.remove('hide');
+        loaderEl.classList.add('hide');
+
+        bodyEl.classList.add('lobby--active');
+    }, 1000);
+
 });
 
 socket.on('MESSAGE_IN_CHAT', (messageData) => {
    setMessageInChat(messageData, currentUser);
 })
+
+socket.on('START_GAME_UI', () => {
+    console.log('START GAME UI FOR ADMIN!!');
+});
 
 socket.on('ERROR', (errorData) => {
 

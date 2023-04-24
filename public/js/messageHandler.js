@@ -42,7 +42,7 @@ function getMessageHtml(data) {
         if (allInsertedListItems.length == 0 || lastItem.id != data.sender.username ) {
             htmlString += `
                 <div class="message__sender">
-                    <picture>
+                    <picture class="avatar">
                         <img src="${data.sender.avatar}" alt="">
                     </picture>
 
