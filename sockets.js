@@ -106,42 +106,39 @@ export default (io, socket) => {
                 });
                 
             } else {
-                
                 socket.leaveAll();
 
                 let newAdmin;
-                
-                if (broadcastLeftMessage) {
-                    const usernamesInRoom = roomController.listRoomUsers(users[roomCode]);
+                let usernamesInRoom = roomController.listRoomUsers(users[roomCode]);
+
+                if (broadcastLeftMessage && (usernamesInRoom.length - 1) > 0) {
 
                     // still some users in room -> show message
-                    if ((usernamesInRoom.length - 1) > 0)  {
-                        console.log('show left chat message');
+                    console.log('show left chat message');
 
-                        // check if user who left was admin -> set new admin if so
-                        if (roomController.wasAdminBefore(username)) {
-                            console.log('admin left! set new admin');
+                    // check if user who left was admin -> set new admin if so
+                    if (roomController.wasAdminBefore(username)) {
+                        console.log('admin left! set new admin');
 
-                            const allKeys = Object.keys(users[roomCode]);
+                        const allKeys = Object.keys(users[roomCode]);
 
-                            let index = allKeys.indexOf(username);
+                        let index = allKeys.indexOf(username);
 
-                            if (index !== -1) {
-                                allKeys.splice(index, 1);
-                            }
-                            
-                            newAdmin = users[roomCode][allKeys[0]];
+                        if (index !== -1) {
+                            allKeys.splice(index, 1);
                         }
-
-                        socket.broadcast.to(`${roomCode}`).emit("MESSAGE_IN_CHAT", {
-                            type: 'system_message', 
-                            message: `${username} left the chat` 
-                        });
+                        
+                        newAdmin = users[roomCode][allKeys[0]];
                     }
+
+                    socket.broadcast.to(`${roomCode}`).emit("MESSAGE_IN_CHAT", {
+                        type: 'system_message', 
+                        message: `${username} left the chat` 
+                    });
                 }
 
                 delete users[roomCode][username];
-                const usernamesInRoom = roomController.listRoomUsers(users[roomCode]);
+                usernamesInRoom = roomController.listRoomUsers(users[roomCode]);
 
                 // no more users in room -> delete room
                 if (usernamesInRoom.length == 0) {
