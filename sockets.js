@@ -34,18 +34,17 @@ export default (io, socket) => {
         users[roomCode][socket.id] = {
             username: username,
             socketId: socket.id,
-            is_admin: false
+            is_admin: (numUsers == 1 ? true : false)
         }
+
+        io.to(`${roomCode}`).emit('ROOM_USERS', users[roomCode]);
 
         // If first user in room
         if (numUsers == 1) {
             socket.emit('SET_ADMIN', username);
-            users[roomCode][socket.id].is_admin = true;
         } else {
             socket.emit('SET_DEFAULT_USER', username);
         }
-
-        io.to(`${roomCode}`).emit('ROOM_USERS', users[roomCode]);
 
         console.log(`${username} has joined the ${roomCode} chat! ✋`);
         socket.broadcast.to(`${roomCode}`).emit('MESSAGE_IN_CHAT', { type: 'system_message', message: `${username} joined the chat` });
@@ -57,6 +56,7 @@ export default (io, socket) => {
 
     socket.on('disconnect', (reason) => {
         socket.leaveAll();
+        console.log(`${username} disconnected from socket`);
 
         if (broadcastLeftMessage) {
 

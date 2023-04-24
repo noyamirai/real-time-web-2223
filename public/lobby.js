@@ -1,5 +1,7 @@
 import socket from "./socket.js";
 import { setMessageInChat } from "./messageHandler.js";
+import statesHandler from "./statesHandler.js";
+const StatesHandler = new statesHandler();
 
 const form = document.querySelector('[data-chat-form]');
 const input = document.querySelector('[data-message-input]');
@@ -39,9 +41,8 @@ socket.on('SET_ADMIN', (username) => {
     .then((adminSet) => {
         if (adminSet) {
             console.log('set admin ui');
-            const adminUserSpan = document.querySelector('[data-admin-username]');
-            adminUserSpan.innerHTML = `<span data-admin-username>${username}</span> is the game master this round`;
-
+            StatesHandler.setGameMasterLabel(username);
+            
             // TODO: make dynamic (ability to trigger this ui on other situations)
             console.log(Object.keys(allUsersInRoom));
             // Show empty message if game hasnt started and theres only 1 player
@@ -70,6 +71,11 @@ socket.on('ROOM_USERS', (users) => {
 })
 
 socket.on('SET_DEFAULT_USER', (username) => {
+
+    const adminUser = getAdminUser(allUsersInRoom);
+    console.log(adminUser);
+
+    StatesHandler.setGameMasterLabel(adminUser.username);
 
     if (!gameStarted) {
         const gameBoard = document.querySelector('[data-game-board]');
@@ -122,3 +128,8 @@ input.addEventListener('input', (e) => {
     }
 
 });
+
+function getAdminUser(allUsers) {
+    const adminKey = Object.keys(allUsers).filter(key => allUsers[key].is_admin);
+    return allUsers[adminKey];
+}
