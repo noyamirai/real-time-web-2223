@@ -623,6 +623,10 @@ button {
       margin-top: 1.125rem;
     }
 
+    .message--double {
+      margin-top: 0!important;
+    }
+
 
     .system-notice {
       text-align: center;

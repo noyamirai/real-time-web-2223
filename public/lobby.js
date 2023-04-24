@@ -43,9 +43,10 @@ socket.on('SET_ADMIN', (username) => {
             adminUserSpan.innerHTML = `<span data-admin-username>${username}</span> is the game master this round`;
 
             // TODO: make dynamic (ability to trigger this ui on other situations)
+            console.log(Object.keys(allUsersInRoom));
             // Show empty message if game hasnt started and theres only 1 player
             if (!gameStarted && Object.keys(allUsersInRoom).length == 1) {
-
+                console.log('empty message?');
                 const gameBoard = document.querySelector('[data-game-board]');
                 gameBoard.classList.add('game--message');
 
