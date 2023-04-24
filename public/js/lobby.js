@@ -13,7 +13,10 @@ let avatarUrl;
 let allUsersInRoom;
 let gameStarted = false;
 
-fetch('/user')
+const urlParams = new URLSearchParams(window.location.search);
+const ESI = urlParams.get('esi');
+
+fetch(`/user/${ESI}`)
 .then(res => res.json())
 .then((result) => {
 
@@ -32,7 +35,6 @@ fetch('/user')
 
     socket.emit('JOIN_ROOM', result.connected);
 
-
 })
 
 socket.on('SET_ADMIN', (username) => {
@@ -49,6 +51,11 @@ socket.on('SET_ADMIN', (username) => {
             console.log('set admin ui');
             StatesHandler.setGameMasterLabel(username);
             
+            const allDefaultUserElements = document.querySelectorAll('[data-default_user-ui]');
+            allDefaultUserElements.forEach(element => {
+                element.innerHTML = '';
+            });
+
             // TODO: make dynamic (ability to trigger this ui on other situations)
             console.log(Object.keys(allUsersInRoom));
 

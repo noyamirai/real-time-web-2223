@@ -106,6 +106,8 @@ class RoomController {
 
     wasAdminBefore = (username) => {
 
+        // console.log(this.roomObject);
+
         if (Object.keys(this.roomObject).length > 0) {
             return this.roomObject[username].is_admin;
         }
