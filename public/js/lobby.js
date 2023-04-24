@@ -48,6 +48,7 @@ socket.on('SET_ADMIN', (username) => {
             
             // TODO: make dynamic (ability to trigger this ui on other situations)
             console.log(Object.keys(allUsersInRoom));
+
             // Show empty message if game hasnt started and theres only 1 player
             if (!gameStarted && Object.keys(allUsersInRoom).length == 1) {
                 console.log('empty message?');
@@ -63,6 +64,16 @@ socket.on('SET_ADMIN', (username) => {
                 gameMessageEl.classList.remove('hide');
             }
 
+            setTimeout(() => {
+                const loaderEl = document.querySelector('[data-loader]');
+                const mainEl = document.querySelector('[data-game-lobby]');
+                const bodyEl = document.querySelector('body');
+
+                mainEl.classList.remove('hide');
+                loaderEl.classList.add('hide');
+
+                bodyEl.classList.add('lobby--active');
+            }, 1000);
             // TODO: show admin controls
         }
     });
