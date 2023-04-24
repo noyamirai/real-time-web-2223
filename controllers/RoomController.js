@@ -50,6 +50,14 @@ class RoomController {
 
         return false;
     }
+
+    listRoomUsers = (roomObject) => {
+        const usernamesInRoom = Object.keys(roomObject).map(key => {
+            return roomObject[key].username
+        });   
+
+        return usernamesInRoom;
+    }
 }
 
 export default RoomController;

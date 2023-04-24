@@ -90,6 +90,15 @@ socket.on('MESSAGE_IN_CHAT', (messageData) => {
    setMessageInChat(messageData, currentUser);
 })
 
+socket.on('ERROR', (errorData) => {
+
+    if (errorData.type == 'username_taken') {
+        socket.disconnect(errorData.type);
+        window.location.href = `/?m=${errorData.type}`;
+    }
+
+});
+
 form.addEventListener('submit', function(e) {
     e.preventDefault();
 
