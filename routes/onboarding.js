@@ -29,27 +29,38 @@ onboardingRoute.post("/", (req, res) => {
         return;
     }
 
+    console.log(postData);
+
     // Room creation
     if (postData.form_type == 'create') {
         req.session.room_code = roomController.getRoomCode();
 
     // Joining a game by room code
     } else if (postData.form_type == 'join' && postData.room_code != '') {
+        if (postData.username == '') {
+            res.redirect('/?m=no_username');
+            return;
+        }
+
         const doesCodeExist = roomController.doesRoomCodeExist(postData.room_code);
 
         // Room doesnt exist!! 
         // TODO: error handling
         if (!doesCodeExist) {
-            res.redirect('/?m=error');
+            res.redirect('/?m=no_room');
             return;
         }
 
         // Room exists -> save code
         req.session.room_code = postData.room_code;
 
+    } else if (postData.username == '') {
+        res.redirect('/?m=no_username');
+        return;
+
     // Something else went wrong
     } else {
-        res.redirect('/');
+        res.redirect('/?m=error');
         return;
     }
 

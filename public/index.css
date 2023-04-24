@@ -279,6 +279,9 @@ button {
   transition: all 250ms ease-in-out;
 }
 
+.btn:disabled {
+  pointer-events: none;
+}
 
 .btn--nav {
   width: auto;
@@ -313,6 +316,10 @@ button {
 
 .btn:hover {
   transform: scale(1.1);
+}
+
+.btn.btn--send:hover {
+  transform: translateY(-50%) scale(1.1);
 }
 /* =============================================================================
   #FORM STUFF
@@ -679,4 +686,12 @@ button {
 
       max-width: 60%;
       background-color: var(--background-color);
+    }
+
+    .hidden-text {
+      opacity: 0;
+      position: absolute;
+      top: 0;
+      left: 0;
+      pointer-events: none;
     }
