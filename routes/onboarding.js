@@ -13,9 +13,21 @@ onboardingRoute.get('/', (req, res) => {
         type = req.query.type;
     }
 
+    const endpoint = "https://api.dicebear.com/6.x/bottts-neutral/svg?seed=";
+    const randomImages = [];
+
+    for (let i = 0; i < 6; i++) {
+        // generate a random name for the icon
+        const name = Math.random().toString(36).substring(7);
+
+        // build the URL for the random icon
+        randomImages.push(endpoint + name);
+    }
+
     res.render('layout', {
         'view': 'index',
         'toggleType': type,
+        'randomAvatars': randomImages,
         'bodyClass': 'onboarding'
     });
 });
@@ -64,6 +76,7 @@ onboardingRoute.post("/", (req, res) => {
         return;
     }
 
+    req.session.avatar_url = postData.avatar;
     req.session.username = postData.username;
     res.redirect("/lobby");
 });
@@ -74,7 +87,8 @@ onboardingRoute.get('/user', (req, res) => {
     const resultObj  = {
         connected: req.session.connected, 
         username: req.session.username,
-        room_code: req.session.room_code
+        room_code: req.session.room_code,
+        avatar_url: req.session.avatar_url
     }
 
     req.session.loggedIn = true;

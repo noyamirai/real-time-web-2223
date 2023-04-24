@@ -6,6 +6,8 @@ export default (io, socket) => {
     
     const username = socket.username;
     const roomCode = socket.roomCode;
+    const avatarUrl = socket.avatarUrl;
+
     let broadcastLeftMessage = true;
 
     console.log(`${username} connected to socket via ${roomCode}`);
@@ -34,7 +36,8 @@ export default (io, socket) => {
         users[roomCode][socket.id] = {
             username: username,
             socketId: socket.id,
-            is_admin: (numUsers == 1 ? true : false)
+            is_admin: (numUsers == 1 ? true : false),
+            avatarUrl: avatarUrl
         }
 
         io.to(`${roomCode}`).emit('ROOM_USERS', users[roomCode]);
@@ -51,7 +54,7 @@ export default (io, socket) => {
     });
     
     socket.on('CHAT_MESSAGE', (obj) => {
-        io.to(`${roomCode}`).emit('MESSAGE_IN_CHAT', { type: 'chat_message', sender: obj.sender, message: obj.message});
+        io.to(`${roomCode}`).emit('MESSAGE_IN_CHAT', { type: 'chat_message', sender: { username: obj.sender, avatar: obj.avatar }, message: obj.message });
     });
 
     socket.on('disconnect', (reason) => {

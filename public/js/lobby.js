@@ -9,6 +9,7 @@ const submitMessageBtn = document.querySelector('.btn--send');
 
 let currentUser;
 let currentRoom;
+let avatarUrl;
 let allUsersInRoom;
 let gameStarted = false;
 
@@ -19,11 +20,13 @@ fetch('/user')
     console.log(result);
     const username = result.username;
     const roomCode = result.room_code;
+    const avatar = result.avatar_url;
 
     currentUser = username;
     currentRoom = roomCode;
+    avatarUrl = avatar;
 
-    socket.auth = { username: username, roomCode: roomCode };
+    socket.auth = { username: username, roomCode: roomCode, avatarUrl: avatarUrl };
     socket.connect();
 
     socket.emit('JOIN_ROOM');
@@ -111,7 +114,8 @@ form.addEventListener('submit', function(e) {
     if (input.value) {
         socket.emit('CHAT_MESSAGE', {
             message: input.value,
-            sender: currentUser
+            sender: currentUser,
+            avatar: avatarUrl
         });
 
         input.value = '';

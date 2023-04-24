@@ -7,30 +7,49 @@
         <button class="btn btn--nav <%= toggleType == 'create-game' ? 'active' : '' %>" type="submit" data-form-type-btn name="toggle" value="create-game">Create game</button>
     </form>
 
-    <!-- TODO: refactor game forms to be one singular form -->
+    <form class="form form--game-setup" method="POST">
+        <input data-form_type type="hidden" name="form_type" value="<%= toggleType == 'create-game' ? 'create' : 'join' %>">
 
-    <form class="form form--game-setup <%= toggleType == 'create-game' ? 'hide' : '' %>" data-game-form method="POST">
-        <h2 class="hidden-text">Join a room</h2>
-        <input type="hidden" name="form_type" value="join">
+        <fieldset class="game-setup--icon" >
+            <h2 class="hidden-text">Select an avatar</h2>
+
+            <div class="loader hidden" data-loader>
+                <i class="fa-solid fa-spinner"></i>
+            </div>
+
+            <% randomAvatars.forEach((path , i) => { %>
+                <label>
+                    <input type="radio" name="avatar" value="<%= path %>" <%= i == 0 ? 'checked' : '' %>>
+                    <picture class="avatar">
+                        <img data-avatar-img src="<%= path %>" alt="Random avatar">
+                    </picture>
+                </label>
+            <% }) %>
+
+            <button class="btn btn--icon hide" data-refresh-icons type="button"><i class="fa-solid fa-arrows-rotate"></i></button>
+            
+        </fieldset>
+
+        <fieldset class="form-section" data-game-form>
+            <h2 data-form_type-heading class="hidden-text"><%= toggleType == 'create-game' ? 'Create your own game' : 'Join a game' %></h2>
         
-        <label for="room_code">Room code:</label>
-        <input name="room_code" data-room_key-input autocomplete="off" placeholder="ABC2023"/>
+            <div class="<%= toggleType == 'create-game' ? 'hide' : '' %>" data-room_code-section>
+                <label for="room_code">Room code:</label>
+                <input name="room_code" data-room_key-input autocomplete="off" placeholder="ABC2023"/>
+    
+                <hr>
+            </div>
 
-        <hr>
+            <label for="username">Username:</label>
+            <input name="username" data-nickname-input autocomplete="off" placeholder="Ideas: stinky, peepo, b00b3nj0yer"/>
 
-        <label for="username">Username:</label>
-        <input name="username" data-nickname-input autocomplete="off" placeholder="Ideas: stinky, peepo, b00b3nj0yer"/>
+        </fieldset>
+
+        
         <button class="btn" type="submit">Let me in</button>
     </form>
     
-    <form class="form form--game-setup <%= toggleType == 'join-game' ? 'hide' : '' %>" data-nickname-form method="POST">
-        <h2 class="hidden-text">Create your own game</h2>
-        <input type="hidden" name="form_type" value="create">
-
-        <label for="username">Username:</label>
-        <input name="username" data-nickname-input autocomplete="off" placeholder="Ideas: stinky, peepo, b00b3nj0yer"/>
-        <button class="btn" type="submit">Let me in</button>
-    </form>
 </main>
 
-<script src="/public/formToggle.js"></script>
+<script src="/public/js/formToggle.js"></script>
+<script src="/public/js/avatarGen.js"></script>

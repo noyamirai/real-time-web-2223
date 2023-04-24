@@ -57,6 +57,7 @@ io.on("connection", (socket) => {
 io.use((socket, next) => {
     const username = socket.handshake.auth.username;
     const roomCode = socket.handshake.auth.roomCode;
+    const avatarUrl = socket.handshake.auth.avatarUrl;
 
     if (!username) {
         return next(new Error("invalid username"));
@@ -67,6 +68,7 @@ io.use((socket, next) => {
 
     socket.username = username;
     socket.roomCode = roomCode;
+    socket.avatarUrl = avatarUrl;
 
     next();
 });

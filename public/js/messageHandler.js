@@ -10,16 +10,16 @@ export function setMessageInChat (data, currentUser) {
         messageElement.classList.add('system-notice');   
     } else if (data.type == 'chat_message') {
         messageElement.classList.add('message');
-        messageElement.id = data.sender;
+        messageElement.id = data.sender.username;
 
         const allInsertedListItems = messages.querySelectorAll('li');
         const lastItem = allInsertedListItems[allInsertedListItems.length-1];
 
-        if (allInsertedListItems.length > 0 && lastItem.id == data.sender) {
+        if (allInsertedListItems.length > 0 && lastItem.id == data.sender.username) {
             messageElement.classList.add('message--double');
         }
 
-        if (data.sender == currentUser) {
+        if (data.sender.username == currentUser) {
             messageElement.classList.add('message--sent');
         }
     }
@@ -39,14 +39,14 @@ function getMessageHtml(data) {
         const allInsertedListItems = messages.querySelectorAll('li');
         const lastItem = allInsertedListItems[allInsertedListItems.length-1];
 
-        if (allInsertedListItems.length == 0 || lastItem.id != data.sender ) {
+        if (allInsertedListItems.length == 0 || lastItem.id != data.sender.username ) {
             htmlString += `
                 <div class="message__sender">
                     <picture>
-                        <img src="" alt="">
+                        <img src="${data.sender.avatar}" alt="">
                     </picture>
 
-                    <span>${data.sender}</span>
+                    <span>${data.sender.username}</span>
                 </div>
             `;
         }
