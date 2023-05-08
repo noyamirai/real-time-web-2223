@@ -1,6 +1,11 @@
+import RPSController from "./controllers/RPSController.js";
 import RoomController from "./controllers/RoomController.js";
 const users = {};
+const playerChoices = {};
+const leaderboard = {};
+
 const roomController = new RoomController();
+const rpsController = new RPSController();
 
 export default (io, socket) => {
 
@@ -15,6 +20,12 @@ export default (io, socket) => {
 
     if (!users.hasOwnProperty(roomCode))
         users[roomCode] = {};
+
+    if (!playerChoices.hasOwnProperty(roomCode))
+        playerChoices[roomCode] = {};
+
+    if (!leaderboard.hasOwnProperty(roomCode))
+        leaderboard[roomCode] = {};
 
     const usernamesInRoom = roomController.listRoomUsers(users[roomCode]);
 
@@ -93,7 +104,91 @@ export default (io, socket) => {
         });
     });
 
-    socket.on('disconnect', (reason) => {
+    socket.on('START_GAME', (obj) => {
+        const targetUser = users[roomCode][obj.targetUser];
+        const targetedBy = users[roomCode][obj.targetedBy.username];
+
+        // TODO: save battle with x users amount 
+
+        io.to(`${targetUser.socketId}`).emit('START_GAME');
+        io.to(`${targetedBy.socketId}`).emit('START_GAME');
+
+    });
+
+    // socket.on('ROUND_UPDATE', (roundN) => {
+    //     console.log('moving to next round: ' + roundN);
+    //     if (!playerChoices[roomCode].hasOwnProperty(`round_${roundN}`))
+    //         playerChoices[roomCode][`round_${roundN}`] = {};
+    // });
+
+    socket.on('RPS_SELECTION', (submission, roundN, leaderboardObj) => {
+        console.log(`times up! -> check choices for round ${roundN}`);
+
+        // round doesnt exist yet
+        if (!playerChoices[roomCode].hasOwnProperty(`round_${roundN}`))
+            playerChoices[roomCode][`round_${roundN}`] = {};
+
+        // check amount of player choices for this round
+        const amountOfChoices = Object.keys(playerChoices[roomCode][`round_${roundN}`]).length;
+
+        // insert user + their submission
+        playerChoices[roomCode][`round_${roundN}`][`player${amountOfChoices + 1}`] = submission;
+        
+        // check new amount of choices
+        const updatedAmount = Object.keys(playerChoices[roomCode][`round_${roundN}`]).length;
+
+        // TODO: for x amount
+        if (updatedAmount == 2) {
+            
+            const result = rpsController.getResults(
+                playerChoices[roomCode][`round_${roundN}`].player1, 
+                playerChoices[roomCode][`round_${roundN}`].player2
+            );
+
+            console.log(result);
+            playerChoices[roomCode][`round_${roundN}`] = result;
+
+            leaderboard[roomCode] = leaderboardObj;
+            
+            const usersInRoom = roomController.listRoomUsers(users[roomCode]);
+            usersInRoom.forEach(username => {
+                let increasePoint = false;
+
+                if (result != 'tie') {
+                    if (result.winner.username == username)
+                        increasePoint = true;
+                }
+
+                if (!leaderboard[roomCode].hasOwnProperty(username)) {
+                    leaderboard[roomCode][username] = (increasePoint ? 1 : 0);
+                } else {
+                    leaderboard[roomCode][username] = (leaderboard[roomCode][username] + (increasePoint ? 1 : 0));
+                }
+            });
+
+            console.log(leaderboard[roomCode]);
+
+            const userArray = Object.entries(leaderboard[roomCode]);
+            console.log(userArray);
+
+            const usersWithThreePoints = userArray.filter(([user, points]) => points === 3);
+
+            console.log(usersWithThreePoints);
+
+            if (usersWithThreePoints.length > 0) {
+                console.log('GAME OVER!!!');
+                console.log('winner: ' + leaderboard[roomCode][usersWithThreePoints[0]]);
+                
+            } else {
+                // only if theres no player with 3 wins
+                playerChoices[roomCode][`round_${roundN + 1}`] = {};
+
+            }
+            
+        }
+    });
+
+    socket.on('disconnect', () => {
         console.log(`${username} disconnected from socket`);
 
         // update state
@@ -110,6 +205,9 @@ export default (io, socket) => {
                     recon_by: username,
                     message: `${username} reconnected` 
                 });
+
+                socket.broadcast.to(`${roomCode}`).emit("ROUND_UPDATE", Object.keys(playerChoices[roomCode]).length);
+                socket.broadcast.to(`${roomCode}`).emit("LEADERBOARD", leaderboard[roomCode]);
                 
             } else {
                 socket.leaveAll();

@@ -1,11 +1,12 @@
 import socket from "./socket.js";
 import { setMessageInChat } from "./messageHandler.js";
+
 import statesHandler from "./statesHandler.js";
 const StatesHandler = new statesHandler();
 
-const form = document.querySelector('[data-chat-form]');
-const input = document.querySelector('[data-message-input]');
-const submitMessageBtn = document.querySelector('.btn--send');
+import { addChatListeners } from "./chatHandler.js";
+import GameController from "./gameScript.js";
+const gameController = new GameController(socket);
 
 let currentUser;
 let currentRoom;
@@ -35,6 +36,8 @@ fetch(`/user/${ESI}`)
 
     socket.emit('JOIN_ROOM', result.connected);
 
+    addChatListeners(socket, currentUser, avatarUrl);
+    gameController.updateUserObject({username: currentUser, avatarUrl: avatarUrl});
 })
 
 socket.on('SET_ADMIN', (username) => {
@@ -64,6 +67,7 @@ socket.on('SET_ADMIN', (username) => {
 
 socket.on('ROOM_USERS', (users) => {
     allUsersInRoom = users;
+    gameController.updateRoomUsers(allUsersInRoom);
 })
 
 socket.on('SET_DEFAULT_USER', (username) => {
@@ -85,43 +89,31 @@ socket.on('MESSAGE_IN_CHAT', (messageData) => {
 
 socket.on('START_GAME_UI', () => {
     console.log('START GAME UI FOR ADMIN!!');
-    
     StatesHandler.hideAndClearSystemMessage();
     StatesHandler.setUserSelectForm(allUsersInRoom, currentUser);
+
+    gameController.setUserSelectListener();
+    gameController.setOptionsListener();
 });
 
 socket.on('ERROR', (errorData) => {
-
     if (errorData.type == 'username_taken') {
         socket.disconnect(errorData.type);
         window.location.href = `/?m=${errorData.type}`;
     }
-
 });
 
-form.addEventListener('submit', function(e) {
-    e.preventDefault();
-
-    if (input.value) {
-        socket.emit('CHAT_MESSAGE', {
-            message: input.value,
-            sender: currentUser,
-            avatar: avatarUrl
-        });
-
-        input.value = '';
-    }
-
+socket.on('START_GAME', () => {
+    gameController.startGame();
 });
 
-input.addEventListener('input', (e) => {
+socket.on('ROUND_UPDATE', (count) => {
+    console.log(count + ' update round count');
+    gameController.updateRoundCount(count);
+});
 
-    if (input.value == '') {
-        submitMessageBtn.disabled = true;
-    } else if (input.value != '' && submitMessageBtn.disabled) {
-        submitMessageBtn.disabled = false;
-    }
-
+socket.on('LEADERBOARD', (leaderboardObj) => {
+    gameController.updateLeaderboard(leaderboardObj);
 });
 
 function getAdminUser(allUsers) {

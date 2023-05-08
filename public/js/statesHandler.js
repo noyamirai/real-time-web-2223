@@ -51,7 +51,7 @@ class statesHandler {
                 const labelElement = document.createElement('label');
 
                 labelElement.innerHTML = `
-                    <input type="radio" name="user-${userObject.username}">
+                    <input type="radio" name="username" id="user-${userObject.username}" value="${userObject.username}">
                     ${userObject.username}
                 `;
 
@@ -82,11 +82,11 @@ class statesHandler {
         });
     }
 
-    hideAndClearSystemMessage = () => {
+    hideAndClearSystemMessage = (hideMessage = true) => {
         const systemMessage = document.querySelector('#system_message');
         systemMessage.innerHTML = '';
 
-        if (!systemMessage.className.includes('hide')) {
+        if (hideMessage && !systemMessage.className.includes('hide')) {
             systemMessage.classList.add('hide');
         }
 

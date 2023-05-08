@@ -14,22 +14,22 @@
         <div data-admin_user-ui data-select_opponent-ui class="hide">
             <p>Who will you fight?</p>
 
-            <form data-user-select class="users users--select">
+            <form method="POST" data-user-select class="users users--select">
                 
             </form>
         </div>
 
-        <div data-default_user-ui class="game__characters hide" id="character_select">
+        <div data-character-select class="game__characters hide" id="character_select">
             <div data-character-select-container class="game__character game__character--rock">
-                <button class="btn">Select</button>
+                <button data-character-select-btn class="btn" value="rock">Select</button>
                 <img src="/public/images/rock.svg" alt="">
             </div>
             <div data-character-select-container class="game__character game__character--paper">
-                <button class="btn">Select</button>
+                <button data-character-select-btn class="btn" value="paper">Select</button>
                 <img src="/public/images/paper.svg" alt="">
             </div>
             <div data-character-select-container class="game__character game__character--scissors">
-                <button class="btn">Select</button>
+                <button data-character-select-btn class="btn" value="scissors">Select</button>
                 <img src="/public/images/scissors.svg" alt="">
             </div>
         </div>

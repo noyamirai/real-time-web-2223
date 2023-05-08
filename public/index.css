@@ -690,6 +690,14 @@ button {
       justify-content: space-around;
     }
 
+      .game__characters {
+        display: flex;
+      }
+
+      .game__characters:has(.game__character.selected) .game__character:not(.selected) {
+        background-color: blue;
+      }
+
       .game__character {
         margin-bottom: -2.2rem;
       }
