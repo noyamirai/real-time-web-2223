@@ -72,10 +72,14 @@ export default (io, socket) => {
             io.to(`${adminUser.socketId}`).emit('START_GAME_UI');
         }
 
-        socket.broadcast.to(`${roomCode}`).emit('MESSAGE_IN_CHAT', { 
-            type: 'system_message', 
-            message: `${username} joined the chat`
-         });
+        if (!wasConnectedBefore) {
+
+            socket.broadcast.to(`${roomCode}`).emit('MESSAGE_IN_CHAT', { 
+                type: 'system_message', 
+                message: `${username} joined the chat`
+            });
+            
+        }
     });
     
     socket.on('CHAT_MESSAGE', (obj) => {
@@ -101,7 +105,9 @@ export default (io, socket) => {
                 console.log(`${username} RECONNECTED!!!!`);
 
                 socket.broadcast.to(`${roomCode}`).emit("MESSAGE_IN_CHAT", {
-                    type: 'system_message', 
+                    type: 'system_message',
+                    recon: true,
+                    recon_by: username,
                     message: `${username} reconnected` 
                 });
                 

@@ -2,10 +2,13 @@ const messages = document.querySelector('[data-message-list]');
 
 export function setMessageInChat (data, currentUser) {
 
+    if (data.recon && data.recon_by == currentUser) {
+        return;
+    }
+
     const htmlString = getMessageHtml(data);
 
     const messageElement = document.createElement("li");
-
     if (data.type == 'system_message') {
         messageElement.classList.add('system-notice');   
     } else if (data.type == 'chat_message') {

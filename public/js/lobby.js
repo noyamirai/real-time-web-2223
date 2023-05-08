@@ -48,43 +48,15 @@ socket.on('SET_ADMIN', (username) => {
     .then( res => res.json())
     .then((adminSet) => {
         if (adminSet) {
-            console.log('set admin ui');
             StatesHandler.setGameMasterLabel(username);
-            
-            const allDefaultUserElements = document.querySelectorAll('[data-default_user-ui]');
-            allDefaultUserElements.forEach(element => {
-                element.innerHTML = '';
-            });
-
-            // TODO: make dynamic (ability to trigger this ui on other situations)
-            console.log(Object.keys(allUsersInRoom));
+            StatesHandler.hideAndClearSystemMessage();
 
             // Show empty message if game hasnt started and theres only 1 player
             if (!gameStarted && Object.keys(allUsersInRoom).length == 1) {
-                console.log('empty message?');
-                const gameBoard = document.querySelector('[data-game-board]');
-                gameBoard.classList.add('game--message');
-
-                const gameMessageEl = document.querySelector('#game_message');
-                const textEl = document.createElement('p');
-                const text = 'Invite friends';
-
-                textEl.innerHTML = text;
-                gameMessageEl.appendChild(textEl);
-                gameMessageEl.classList.remove('hide');
+                StatesHandler.setGameMessage('Invite friends');
             }
 
-            setTimeout(() => {
-                const loaderEl = document.querySelector('[data-loader]');
-                const mainEl = document.querySelector('[data-game-lobby]');
-                const bodyEl = document.querySelector('body');
-
-                mainEl.classList.remove('hide');
-                loaderEl.classList.add('hide');
-
-                bodyEl.classList.add('lobby--active');
-            }, 1000);
-            // TODO: show admin controls
+            StatesHandler.removeSetupLoader(1000);
         }
     });
 
@@ -95,36 +67,16 @@ socket.on('ROOM_USERS', (users) => {
 })
 
 socket.on('SET_DEFAULT_USER', (username) => {
-
     const adminUser = getAdminUser(allUsersInRoom);
     console.log(adminUser);
 
     StatesHandler.setGameMasterLabel(adminUser.username);
 
     if (!gameStarted) {
-        const gameBoard = document.querySelector('[data-game-board]');
-        gameBoard.classList.add('game--message');
-
-        const gameMessageEl = document.querySelector('#game_message');
-        const textEl = document.createElement('p');
-        const text = 'Waiting for game master to start';
-
-        textEl.innerHTML = text;
-        gameMessageEl.appendChild(textEl);
-        gameMessageEl.classList.remove('hide');
+        StatesHandler.setGameMessage('Waiting for game master to start');
     }
 
-    setTimeout(() => {
-        const loaderEl = document.querySelector('[data-loader]');
-        const mainEl = document.querySelector('[data-game-lobby]');
-        const bodyEl = document.querySelector('body');
-
-        mainEl.classList.remove('hide');
-        loaderEl.classList.add('hide');
-
-        bodyEl.classList.add('lobby--active');
-    }, 1000);
-
+    StatesHandler.removeSetupLoader(1000);
 });
 
 socket.on('MESSAGE_IN_CHAT', (messageData) => {
@@ -133,6 +85,9 @@ socket.on('MESSAGE_IN_CHAT', (messageData) => {
 
 socket.on('START_GAME_UI', () => {
     console.log('START GAME UI FOR ADMIN!!');
+    
+    StatesHandler.hideAndClearSystemMessage();
+    StatesHandler.setUserSelectForm(allUsersInRoom, currentUser);
 });
 
 socket.on('ERROR', (errorData) => {
