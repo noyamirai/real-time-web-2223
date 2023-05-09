@@ -111,18 +111,47 @@ class RoomController {
 
     wasAdminBefore = (username) => {
 
-        // console.log(this.roomObject);
-
         if (Object.keys(this.roomObject).length > 0) {
             return this.roomObject[username].is_admin;
         }
 
         return false;
-
     }
 
     getUserFromBackup = (username) => {
         return this.roomObject[username];
+    }
+
+    getWinningUser = (leaderboard) => {
+        const user = Object.entries(leaderboard)
+        .filter(([user, points]) => {
+            return points === 3;
+        })
+        .map(([user, points]) => {
+            return user;
+        });
+
+        return user;
+    }
+
+    setUserPoints = (usersInRoom, result, leaderboard) => {
+
+        usersInRoom.forEach(username => {
+            let increasePoint = false;
+
+            if (result != 'tie') {
+                if (result.winner.username == username)
+                    increasePoint = true;
+            }
+
+            if (!leaderboard.hasOwnProperty(username)) {
+                leaderboard[username] = (increasePoint ? 1 : 0);
+            } else {
+                leaderboard[username] = (leaderboard[username] + (increasePoint ? 1 : 0));
+            }
+        });
+
+        return leaderboard;
     }
 }
 

@@ -13,4 +13,16 @@ settingsRoute.post('/admin', (req, res) => {
     res.json({success: true});
 });
 
+settingsRoute.post('/default-user', (req, res) => {
+    const username = req.body.username;
+
+    if (username != req.session.username) {
+        res.json({success: false});
+        return;
+    }
+
+    req.session.isAdmin = false;
+    res.json({success: true});
+});
+
 export { settingsRoute };

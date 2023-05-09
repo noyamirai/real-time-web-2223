@@ -2,6 +2,8 @@ const chatForm = document.querySelector('[data-chat-form]');
 const chatInput = document.querySelector('[data-message-input]');
 const submitMessageBtn = document.querySelector('.btn--send');
 
+let isAdmin = false;
+
 export function addChatListeners (socket, currentUser, avatarUrl) {
     chatForm.addEventListener('submit', function(e) {
         e.preventDefault();
@@ -10,7 +12,8 @@ export function addChatListeners (socket, currentUser, avatarUrl) {
             socket.emit('CHAT_MESSAGE', {
                 message: chatInput.value,
                 sender: currentUser,
-                avatar: avatarUrl
+                avatar: avatarUrl,
+                is_admin: isAdmin
             });
 
             chatInput.value = '';
@@ -27,4 +30,9 @@ export function addChatListeners (socket, currentUser, avatarUrl) {
         }
 
     });
+}
+
+export function setAdminUserForChat(bool) {
+    console.log('is admin for chat: ' + bool);
+    isAdmin = bool;
 }

@@ -4,9 +4,18 @@ import { setMessageInChat } from "./messageHandler.js";
 import statesHandler from "./statesHandler.js";
 const StatesHandler = new statesHandler();
 
-import { addChatListeners } from "./chatHandler.js";
+import { addChatListeners, setAdminUserForChat } from "./chatHandler.js";
 import GameController from "./gameScript.js";
 const gameController = new GameController(socket);
+
+const urlParams = new URLSearchParams(window.location.search);
+const ESI = urlParams.get('esi');
+
+const userSelectForm = document.querySelector('[data-user-select]');
+const copyTexts = document.querySelectorAll('[data-copy-text]');
+const tooltip = document.querySelector('[data-tooltip]');
+const gameOverBtns = document.querySelectorAll('[data-game-over-btns]');
+const pickContainers = document.querySelectorAll('[data-character-select-container]');
 
 let currentUser;
 let isAdmin;
@@ -14,12 +23,7 @@ let currentRoom;
 let avatarUrl;
 let allUsersInRoom;
 let gameStarted = false;
-
-const urlParams = new URLSearchParams(window.location.search);
-const ESI = urlParams.get('esi');
-
-const userSelectForm = document.querySelector('[data-user-select]');
-const optionButtons = document.querySelectorAll('[data-character-select-btn]');
+let prevAdmin;
 
 fetch(`/user/${ESI}`)
 .then(res => res.json())
@@ -46,6 +50,29 @@ fetch(`/user/${ESI}`)
 
 socket.on('SET_ADMIN', (username) => {
 
+    const currentAdminUser = getAdminUser(allUsersInRoom);
+    // user changed! set server session isAdmin = false;
+    if (currentAdminUser.username != username && isAdmin) {
+
+        fetch(`/set/default-user`, {
+        method: 'POST',
+        body: {
+            'username': currentAdminUser.username
+            }
+        })
+        .then( res => res.json())
+        .then((adminSet) => {
+            if (adminSet) {
+                console.log('USER REVOKED FROM ADMIN: ' + currentAdminUser.username);
+                isAdmin = false;
+
+                setAdminUserForChat(isAdmin);
+            }
+        });
+        
+    }
+
+    // Set new admin
     fetch(`/set/admin`, {
         method: 'POST',
         body: {
@@ -55,11 +82,13 @@ socket.on('SET_ADMIN', (username) => {
     .then( res => res.json())
     .then((adminSet) => {
         if (adminSet) {
-            console.log('ADMIN SET: ' + username);
+            console.log('NEW ADMIN SET: ' + username);
 
             if (username == currentUser) {
                 isAdmin = true;
             }
+
+            setAdminUserForChat(isAdmin);
 
             StatesHandler.setGameMasterLabel(username);
             StatesHandler.hideAndClearSystemMessage();
@@ -159,11 +188,10 @@ socket.on('LEADERBOARD', (leaderboardObj) => {
 
 socket.on('EXIT_ROOM', () => {
     setTimeout(() => {
-        window.location.href = `/`;
+        window.location.href = `/exit`;
     }, 1500);
 });
 
-const gameOverBtns = document.querySelectorAll('[data-game-over-btns]');
 gameOverBtns.forEach(btn => {
     btn.addEventListener('click', (e) => {
 
@@ -184,17 +212,12 @@ userSelectForm.addEventListener('submit', (e) => {
     gameController.handleGameTargetSelection(e);
 });
 
-const pickContainers = document.querySelectorAll('[data-character-select-container]');
-
 pickContainers.forEach(container => {
     container.addEventListener('click', (e) => {
         const btn = container.querySelector('button');
         gameController.handleUserHandPick(btn);
     });
 });
-
-const copyTexts = document.querySelectorAll('[data-copy-text]');
-const tooltip = document.querySelector('[data-tooltip]');
 
 if (copyTexts.length > 0) {
     copyTexts.forEach((copyText) => {

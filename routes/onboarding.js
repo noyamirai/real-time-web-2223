@@ -3,28 +3,25 @@ import RoomController from '../controllers/RoomController.js';
 import MessageController from '../controllers/MessageController.js';
 const onboardingRoute = express.Router();
 
-let username;
 const roomController = new RoomController();
 const errorMessageController = new MessageController();
 
 onboardingRoute.get('/', (req, res) => {
 
+    const endpoint = "https://api.dicebear.com/6.x/bottts-neutral/svg?seed=";
+    const randomImages = [];
+
     let type = 'join-game';
-
-    if (req.query && req.query.type) {
-        type = req.query.type;
-    }
-
     let error = false;
     let errorMessage = '';
+
+    if (req.query && req.query.type)
+        type = req.query.type;
 
     if (req.query && req.query.m) {
         error = true;   
         errorMessage = errorMessageController.getErrorMessage(req.query.m);
     }
-
-    const endpoint = "https://api.dicebear.com/6.x/bottts-neutral/svg?seed=";
-    const randomImages = [];
 
     for (let i = 0; i < 6; i++) {
         // generate a random name for the icon
@@ -46,9 +43,8 @@ onboardingRoute.get('/', (req, res) => {
 
 onboardingRoute.get('/exit', (req, res) => {
     req.session.destroy();
-    
     res.redirect('/');
-})
+});
 
 onboardingRoute.post("/", (req, res) => {
     const postData = req.body;
@@ -63,22 +59,27 @@ onboardingRoute.post("/", (req, res) => {
     if (postData.form_type == 'create') {
         req.session.room_code = roomController.getRoomCode();
 
+    // No data for room join
+    } else if (postData.form_type == 'join' && postData.username == '' && postData.room_code == '') {
+        res.redirect('/?m=no_info');
+        return;
+
     // Joining a game by room code
-    } else if (postData.form_type == 'join' && postData.room_code != '') {
+    } else if (postData.form_type == 'join') {
 
-        if (postData.username == '' && postData.room_code == '') {
-            res.redirect('/?m=no_info');
-            return;
-        }
-
+        // no username
         if (postData.username == '') {
             res.redirect('/?m=no_username');
             return;
         }
 
-        const doesCodeExist = roomController.doesRoomCodeExist(postData.room_code);
+        // no room code
+        if (postData.roomCode == '') {
+            res.redirect('/?m=no_room');
+            return;
+        }
 
-        // Room doesnt exist!! 
+        const doesCodeExist = roomController.doesRoomCodeExist(postData.room_code);
         if (!doesCodeExist) {
             res.redirect('/?m=no_room');
             return;
@@ -87,6 +88,7 @@ onboardingRoute.post("/", (req, res) => {
         // Room exists -> save code
         req.session.room_code = postData.room_code;
 
+    // room create but no username
     } else if (postData.username == '') {
         res.redirect('/?m=no_username');
         return;
@@ -96,6 +98,8 @@ onboardingRoute.post("/", (req, res) => {
         res.redirect('/?m=error');
         return;
     }
+
+    // SAVE DATA IN SESSION
 
     req.session.avatar_url = postData.avatar;
     req.session.username = postData.username;
@@ -118,6 +122,7 @@ onboardingRoute.post("/", (req, res) => {
     res.redirect(`/lobby?esi=${sessionId}`);
 });
 
+// Providing session data to client
 onboardingRoute.get('/user/:esi', (req, res) => {
     const sessionId = req.params.esi;
 
@@ -129,6 +134,7 @@ onboardingRoute.get('/user/:esi', (req, res) => {
     res.send(resultObj);
 });
 
+// ChatGPT slay
 function uniqid(prefix = "", random = false) {
     const sec = Date.now() * 1000 + Math.random() * 1000;
     const id = sec.toString(16).replace(/\./g, "").padEnd(14, "0");

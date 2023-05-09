@@ -61,10 +61,10 @@ io.use((socket, next) => {
     const isAdmin = socket.handshake.auth.isAdmin ?? false;
 
     if (!username) {
-        return next(new Error("invalid username"));
+        return next(new Error("no username"));
     }
     if (!roomCode) {
-        return next(new Error("invalid roomcode"));
+        return next(new Error("no roomcode"));
     }
 
     socket.username = username;

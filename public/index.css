@@ -917,7 +917,15 @@ button {
     }
 
       .message--sent .message__sender {
-        justify-content: flex-end;
+        /* justify-content: flex-end; */
+
+        justify-content: flex-start;
+        flex-direction: row-reverse;
+      }
+
+      .message--sent .message__sender picture {
+        margin-right: 0;
+        margin-left: .475rem;
       }
 
       .message--sent .message__content {
@@ -925,17 +933,31 @@ button {
         margin-left: auto;
       }
 
+      .message__sender i {
+        display: none;
+      }
+
+      .message--admin {
+        padding-top: .75rem;
+      }
+      
       .message--admin .message__content {
         background-color: var(--background-color);
       }
 
       .message--admin .message__sender span,
       .message--admin .message__sender i {
+        display: block;
         color: var(--background-color);
       }
 
       .message--admin i {
-        margin-left: .375rem;
+        position: absolute;
+        left: 50%;
+        transform: translateX(-50%);
+
+        top: -0.6875rem;
+        /* margin-left: .375rem; */
       }
 
     .message + .message, .message + * { 
@@ -943,6 +965,7 @@ button {
     }
 
     .message--double {
+      padding-top: 0!important;
       margin-top: 0!important;
     }
 

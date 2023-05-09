@@ -32,7 +32,7 @@ export default (io, socket) => {
 
     socket.on('JOIN_ROOM', (wasConnectedBefore) => {
 
-        // Username taken!
+        // Username already taken!
         if (!wasConnectedBefore && usernamesInRoom.length > 0 && usernamesInRoom.includes(username)) {            
             socket.emit('ERROR', { type: 'username_taken' });
             broadcastLeftMessage = false;
@@ -44,22 +44,20 @@ export default (io, socket) => {
         const room = io.sockets.adapter.rooms.get(roomCode);
         const numUsers = room ? room.size : 0;
 
+        // user was connected before -> get their info from backup!!
         if (wasConnectedBefore) {
-            console.log('user was connected before');
             users[roomCode][username] = roomController.getUserFromBackup(username);
             users[roomCode][username].socketId = socket.id;
 
             const currentAdmin = roomController.getAdmin(users[roomCode]);
 
-            console.log('current admin is: ' + currentAdmin.username);
-            console.log('was admin before: ' + roomController.wasAdminBefore(username));
-
+            // if they were admin before but their admin rights got revoked due to disconnection :thinking:
             if (roomController.wasAdminBefore(username) && !currentAdmin) {
                 isAdmin = true;
             }
             
+        // create new user
         } else {
-            // create new user
             users[roomCode][username] = {
                 username: username,
                 socketId: socket.id,
@@ -68,6 +66,7 @@ export default (io, socket) => {
             }
         }
 
+        // set points (newby so 0 points)
         leaderboard[roomCode][username] = 0;
 
         io.to(`${roomCode}`).emit('ROOM_USERS', users[roomCode]);
@@ -102,11 +101,13 @@ export default (io, socket) => {
     });
     
     socket.on('CHAT_MESSAGE', (obj) => {
+        console.log(obj);
         io.to(`${roomCode}`).emit('MESSAGE_IN_CHAT', { 
             type: 'chat_message', 
             sender: { 
                 username: obj.sender, 
-                avatar: obj.avatar 
+                avatar: obj.avatar,
+                is_admin: obj.is_admin
             }, 
             message: obj.message 
         });
@@ -136,6 +137,7 @@ export default (io, socket) => {
         // check new amount of choices
         const updatedAmount = Object.keys(playerChoices[roomCode][`round_${roundN}`]).length;
 
+        // two player choices in object -> process results!
         if (updatedAmount == 2) {
             
             const result = rpsController.getResults(
@@ -150,34 +152,17 @@ export default (io, socket) => {
             }
             
             const usersInRoom = roomController.listRoomUsers(users[roomCode]);
+            leaderboard[roomCode]= roomController.setUserPoints(usersInRoom, result, leaderboard[roomCode]);
 
-            usersInRoom.forEach(username => {
-                let increasePoint = false;
+            console.log(leaderboard[roomCode]);
+            const usersWithThreePoints = roomController.getWinningUser(leaderboard[roomCode]);
 
-                if (result != 'tie') {
-                    if (result.winner.username == username)
-                        increasePoint = true;
-                }
-
-                if (!leaderboard[roomCode].hasOwnProperty(username)) {
-                    leaderboard[roomCode][username] = (increasePoint ? 1 : 0);
-                } else {
-                    leaderboard[roomCode][username] = (leaderboard[roomCode][username] + (increasePoint ? 1 : 0));
-                }
-            });
-
-            const usersWithThreePoints = Object.entries(leaderboard[roomCode])
-            .filter(([user, points]) => {
-                return points === 3;
-            })
-            .map(([user, points]) => {
-                return user;
-            });
-
+            // Player has 3 wins!
             if (usersWithThreePoints.length > 0) {
                 console.log('GAME OVER!!!');
 
                 const winner = users[roomCode][usersWithThreePoints[0]].username;
+
                 io.in(`${roomCode}`).emit('MESSAGE_IN_CHAT', { 
                     type: 'system_message', 
                     gameResult: playerChoices[roomCode][`round_${roundN}`],
@@ -188,8 +173,8 @@ export default (io, socket) => {
                     leaderboard[roomCode]
                 );
                 
+            // No winner yet
             } else {
-                // only if theres no player with 3 wins
                 playerChoices[roomCode][`round_${roundN + 1}`] = {};
 
                 let resultMessage = `Round ${roundN} finished: `;
@@ -202,6 +187,8 @@ export default (io, socket) => {
                     resultMessage += `<strong>${playerChoices[roomCode][`round_${roundN}`].winner.username}</strong> wins`;
                 }
 
+                let newAdminUsername;
+
                 if (setNewAdmin) {
                     const winningUsername = playerChoices[roomCode][`round_${roundN}`].winner.username;
                     const currentAdmin = roomController.getAdmin(users[roomCode]);
@@ -212,8 +199,11 @@ export default (io, socket) => {
 
                         roomController.roomUsersBackup(users[roomCode]);
 
-                        io.in(`${roomCode}`).emit('SET_ADMIN', playerChoices[roomCode][`round_${roundN}`].winner.username);
+                        newAdminUsername = playerChoices[roomCode][`round_${roundN}`].winner.username;
+
+                        io.in(`${roomCode}`).emit('SET_ADMIN', newAdminUsername);
                         io.to(`${roomCode}`).emit('ROOM_USERS', users[roomCode]);
+
                     }
                     
                 }
@@ -229,6 +219,13 @@ export default (io, socket) => {
                     (roundN + 1)
                 );
 
+                if (setNewAdmin) {
+                    io.in(`${roomCode}`).emit("MESSAGE_IN_CHAT", {
+                        type: 'system_message', 
+                        message: `<i class="fa-solid fa-crown"></i> ${newAdminUsername} has been promoted to game master` 
+                    });
+                }
+
             }
             
         }
@@ -236,12 +233,12 @@ export default (io, socket) => {
 
     socket.on('RESTART_LOBBY', () => {
 
-        console.log('restart lobby');
-
+        // Clear leaderboard points for each user
         Object.keys(leaderboard[roomCode]).forEach((user) => {
             leaderboard[roomCode][user] = 0;
         });
 
+        // Clear results of rounds
         playerChoices[roomCode] = {};
 
         io.in(`${roomCode}`).emit('ROUND_UPDATE', 1);
@@ -266,26 +263,17 @@ export default (io, socket) => {
         broadcastLeftMessage = false;
 
         io.in(`${roomCode}`).emit('EXIT_ROOM');
-
-        // const socketsInRoom = io.sockets.adapter.rooms.get(`${roomCode}`);
-
-        // // Loop through each socket and disconnect them from the room
-        // if (socketsInRoom) {
-        //     socketsInRoom.forEach(socketId => {
-        //         io.sockets.sockets.get(socketId).leave(`${roomCode}`);
-        //     });
-        // }
-
     });
 
     socket.on('disconnect', () => {
         console.log(`${username} disconnected from socket`);
 
-        // update state
+        // update connection state
         roomController.setConnectionState(false);
 
         setTimeout(() => {
 
+            // On refresh or if reconnect within 2 sec :thinking:
             if (roomController.getConnectionState() && users[roomCode][username]) {
                 console.log(`${username} RECONNECTED!!!!`);
 
@@ -298,10 +286,8 @@ export default (io, socket) => {
 
                 io.to(`${users[roomCode][username].socketId}`).emit("ROUND_UPDATE", (Object.keys(playerChoices[roomCode]).length == 0 ? 1 : Object.keys(playerChoices[roomCode]).length));
                 io.to(`${users[roomCode][username].socketId}`).emit("LEADERBOARD", leaderboard[roomCode]);
-
-                // socket.broadcast.to(`${roomCode}`).emit("ROUND_UPDATE", Object.keys(playerChoices[roomCode]).length);
-                // socket.broadcast.to(`${roomCode}`).emit("LEADERBOARD", leaderboard[roomCode]);
                 
+            // player disconnected :sad:
             } else {
                 socket.leaveAll();
 
@@ -331,32 +317,39 @@ export default (io, socket) => {
                     });
                 }
 
-                delete users[roomCode][username];
-                usernamesInRoom = roomController.listRoomUsers(users[roomCode]);
+                if (users[roomCode]) {
 
-                // no more users in room -> delete room
-                if (usernamesInRoom.length == 0) {
-                    delete users[roomCode];
-                    roomController.deleteRoomFromJson(roomCode);
+                    delete users[roomCode][username];
+                    usernamesInRoom = roomController.listRoomUsers(users[roomCode]);
 
-                    console.log('deleted room; no one left');
+                    // no more users in room -> delete room
+                    if (usernamesInRoom.length == 0) {
+                        delete users[roomCode];
+                        roomController.deleteRoomFromJson(roomCode);
 
-                    roomController.roomUsersBackup({});
-                } else {
+                        console.log('deleted room; no one left');
 
-                    if (newAdmin) {
-                       users[roomCode][newAdmin.username].is_admin = true; 
-                    }
+                        roomController.roomUsersBackup({});
+                    } else {
 
-                    // update room users for client
-                    io.to(`${roomCode}`).emit('ROOM_USERS', users[roomCode]);
-                    roomController.roomUsersBackup(users[roomCode]);
-                    
-                    if (newAdmin) {
-                        io.to(`${newAdmin.socketId}`).emit('SET_ADMIN', newAdmin.username);
+                        if (newAdmin) {
+                            users[roomCode][newAdmin.username].is_admin = true; 
+                        }
+
+                        // update room users for client
+                        io.to(`${roomCode}`).emit('ROOM_USERS', users[roomCode]);
+                        roomController.roomUsersBackup(users[roomCode]);
+                        
+                        if (newAdmin) {
+                            io.to(`${newAdmin.socketId}`).emit('SET_ADMIN', newAdmin.username);
+
+                            io.to(`${roomCode}`).emit("MESSAGE_IN_CHAT", {
+                                type: 'system_message', 
+                                message: `<i class="fa-solid fa-crown"></i> ${newAdmin.username} has been promoted to game master` 
+                            });
+                        }
                     }
                 }
-
             }
 
         }, 2000);

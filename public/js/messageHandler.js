@@ -43,6 +43,10 @@ export function setMessageInChat (data, currentUser) {
         if (data.sender.username == currentUser) {
             messageElement.classList.add('message--sent');
         }
+
+        if (data.sender.is_admin) {
+            messageElement.classList.add('message--admin');
+        }
     }
 
     messageElement.innerHTML = htmlString;
@@ -64,6 +68,7 @@ function getMessageHtml(data) {
             htmlString += `
                 <div class="message__sender">
                     <picture class="avatar">
+                        <i class="fa-solid fa-crown"></i>
                         <img src="${data.sender.avatar}" alt="">
                     </picture>
 
