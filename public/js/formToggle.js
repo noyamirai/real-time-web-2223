@@ -1,4 +1,5 @@
 const toggleForm = document.querySelector('[data-form-type]');
+const errorMessage = document.querySelector('.error');
 
 toggleForm.addEventListener('submit', (e) => {
     e.preventDefault();
@@ -9,6 +10,10 @@ toggleForm.addEventListener('submit', (e) => {
            btn.classList.remove('active'); 
         }
     });
+
+    if (errorMessage) {
+        errorMessage.classList.toggle('hide');   
+    }
 
     const buttonClicked = e.submitter;
     buttonClicked.classList.add('active');

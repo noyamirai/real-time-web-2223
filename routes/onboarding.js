@@ -1,9 +1,11 @@
 import express from 'express';
 import RoomController from '../controllers/RoomController.js';
+import MessageController from '../controllers/MessageController.js';
 const onboardingRoute = express.Router();
 
 let username;
 const roomController = new RoomController();
+const errorMessageController = new MessageController();
 
 onboardingRoute.get('/', (req, res) => {
 
@@ -11,6 +13,14 @@ onboardingRoute.get('/', (req, res) => {
 
     if (req.query && req.query.type) {
         type = req.query.type;
+    }
+
+    let error = false;
+    let errorMessage = '';
+
+    if (req.query && req.query.m) {
+        error = true;   
+        errorMessage = errorMessageController.getErrorMessage(req.query.m);
     }
 
     const endpoint = "https://api.dicebear.com/6.x/bottts-neutral/svg?seed=";
@@ -28,7 +38,9 @@ onboardingRoute.get('/', (req, res) => {
         'view': 'index',
         'toggleType': type,
         'randomAvatars': randomImages,
-        'bodyClass': 'onboarding'
+        'bodyClass': 'onboarding',
+        'error': error,
+        'errorMessage': errorMessage 
     });
 });
 
@@ -53,6 +65,12 @@ onboardingRoute.post("/", (req, res) => {
 
     // Joining a game by room code
     } else if (postData.form_type == 'join' && postData.room_code != '') {
+
+        if (postData.username == '' && postData.room_code == '') {
+            res.redirect('/?m=no_info');
+            return;
+        }
+
         if (postData.username == '') {
             res.redirect('/?m=no_username');
             return;
@@ -61,7 +79,6 @@ onboardingRoute.post("/", (req, res) => {
         const doesCodeExist = roomController.doesRoomCodeExist(postData.room_code);
 
         // Room doesnt exist!! 
-        // TODO: error handling
         if (!doesCodeExist) {
             res.redirect('/?m=no_room');
             return;

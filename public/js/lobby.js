@@ -185,11 +185,19 @@ userSelectForm.addEventListener('submit', (e) => {
     gameController.handleUserSelectForm(e);
 });
 
-optionButtons.forEach(btn => {
-    btn.addEventListener('click', (e) => {
-        gameController.handleUserPick(e.target);
+const pickContainers = document.querySelectorAll('[data-character-select-container]');
+
+pickContainers.forEach(container => {
+    container.addEventListener('click', (e) => {
+        const btn = container.querySelector('button');
+        gameController.handleUserPick(btn);
     });
 })
+// optionButtons.forEach(btn => {
+//     btn.addEventListener('click', (e) => {
+//         gameController.handleUserPick(e.target);
+//     });
+// })
 
 function getAdminUser(allUsers) {
     const adminKey = Object.keys(allUsers).filter(key => allUsers[key].is_admin);

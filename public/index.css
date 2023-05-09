@@ -203,6 +203,15 @@ main {
   min-height: 100%;
 }
 
+.error {
+  background-color: var(--text-color);
+  padding: 1rem .75rem;
+  margin-bottom: var(--default-padding);
+  color: #FFF;
+  font-weight: 700;
+  border-radius: 0.4rem;
+}
+
 .lobby main {
   min-height: 100%;
   width: calc(100% - 25rem);
@@ -353,9 +362,21 @@ button {
   transform: translateY(-50%);
 }
 
+.game__character:hover {
+  transform: translateY(-5rem)!important;
+}
+
+.game__character .btn:hover {
+  transform: none;
+}
+
 .btn:hover {
   transform: scale(1.1);
 }
+
+/* .btn:hover + img {
+  transform: translateY(-100px);
+} */
 
 .btn.btn--icon:hover,
 .btn.btn--send:hover {
@@ -687,29 +708,54 @@ button {
     .game--select {
       display: flex;
       align-items: flex-end;
-      justify-content: space-around;
+      justify-content: flex-end;
     }
 
       .game__characters {
+        /* display: flex;
+        gap: 1.5rem; */
+
+        position: absolute;
         display: flex;
+        gap: 1.5rem;
+        right: 0;
+        bottom: -40%;
       }
 
       .game__characters:has(.game__character.selected) .game__character:not(.selected) {
-        background-color: blue;
+        /* background-color: blue; */
+        transform: translateY(10rem);
+      }
+
+      .game__character.selected .btn {
+        background-color: hsl(136.04deg 100% 35.95%);
       }
 
       .game__character {
+        position: relative;
+        display: flex;
+        align-items: center;
+        flex-direction: column;
+        justify-content: space-between;
+
         margin-bottom: -2.2rem;
+        cursor: pointer;
+        transition: all 250ms ease-in-out;
       }
-
-        .game__character.game__character--paper {
-          margin-left: .8rem;
-        }
-
 
         .game__character > img {
           width: 80%;
           margin-top: var(--big-padding);
+        }
+
+        .game__character.game__character--rock img {
+          width: 60%;
+        }
+        .game__character.game__character--paper img {
+          width: 80%;
+        }
+        .game__character.game__character--scissors img {
+          width: 70%;
         }
 
         .game__character.game__character--scissors .btn {

@@ -175,9 +175,11 @@ class GameController {
     handleUserPick = (targetButton) => {
         optionButtons.forEach(btn => {
             const parentElement = btn.parentNode;
+            btn.textContent = 'select';
             parentElement.classList.remove('selected');
         });
 
+        targetButton.textContent = "selected";
         const parentElement = targetButton.parentNode;
         parentElement.classList.add('selected');
     }

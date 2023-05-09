@@ -1,6 +1,7 @@
 <%- include('./partials/header.ejs') %>
 
 <main>
+
     
     <form class="form form--toggle" data-form-type method="POST">
         <button class="btn btn--nav <%= toggleType == 'join-game' ? 'active' : '' %>" type="submit" data-form-type-btn name="toggle"  value="join-game">Join game</button>
@@ -30,12 +31,18 @@
             
         </fieldset>
 
+        <% if (error) { %>
+            <div class="error">
+                <p><%= errorMessage %></p>
+            </div>
+        <% } %>
+
         <fieldset class="form-section" data-game-form>
             <h2 data-form_type-heading class="hidden-text"><%= toggleType == 'create-game' ? 'Create your own game' : 'Join a game' %></h2>
         
             <div class="<%= toggleType == 'create-game' ? 'hide' : '' %>" data-room_code-section>
                 <label for="room_code">Room code:</label>
-                <input name="room_code" data-room_key-input autocomplete="off" placeholder="ABC2023"/>
+                <input name="room_code" data-room_key-input autocomplete="off" placeholder="QHW2161"/>
     
                 <hr>
             </div>
