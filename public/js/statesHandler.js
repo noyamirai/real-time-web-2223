@@ -38,7 +38,7 @@ class statesHandler {
     setUserSelectForm = (allUsersInRoom, currentUser) => {
         console.log('set user select form');
         
-        const userSelectForm = document.querySelector('[data-user-select]');
+        const userSelectForm = document.querySelector('[data-user-select]');        
         userSelectForm.innerHTML = '';
 
         const gameBoard = document.querySelector('[data-game-board]');
@@ -67,9 +67,9 @@ class statesHandler {
         userSelectForm.appendChild(submitBtn);
 
         const selectOpponentUI = document.querySelector('[data-select_opponent-ui]');
-        console.log(selectOpponentUI);
+        // console.log(selectOpponentUI);
         selectOpponentUI.classList.remove('hide');
-        console.log(selectOpponentUI);
+        // console.log(selectOpponentUI);
     }
 
     hideAdminUIs = () => {
@@ -90,6 +90,11 @@ class statesHandler {
             systemMessage.classList.add('hide');
         }
 
+    }
+
+    showGameOverBtns = () => {
+        const btnContainer = document.querySelector('[data-restart-game]');
+        btnContainer.classList.remove('hide');
     }
 
 }

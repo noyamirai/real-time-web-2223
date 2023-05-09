@@ -1,6 +1,5 @@
 import statesHandler from "./statesHandler.js";
 
-console.log('game script!!');
 const userSelectForm = document.querySelector('[data-user-select]');
 const optionButtons = document.querySelectorAll('[data-character-select-btn]');
 
@@ -60,7 +59,6 @@ class GameController {
                 countText.innerHTML = 'Start!';
 
                 setTimeout(() => {
-                    console.log('SHOW HANDS');
                     clearInterval(countdown);
 
                     StatesHandler.hideAndClearSystemMessage();
@@ -105,7 +103,7 @@ class GameController {
                 countText.innerHTML = 'Time is up!';
 
                 setTimeout(() => {
-                    console.log('PROCESS RESULTS');
+                    console.log('SEND RPS_SELECTION EMIT');
                     clearInterval(countdown);
 
                     StatesHandler.hideAndClearSystemMessage();
@@ -145,7 +143,18 @@ class GameController {
         const handSelectForm = document.querySelector('[data-character-select]');
         handSelectForm.classList.remove('hide');
 
+        this.resetHandPicks();
+
         this.setSelectCountdown();
+    }
+
+    resetHandPicks = () => {
+        const handPick = document.querySelector('[data-character-select-container].selected');
+
+        if (handPick) {
+            handPick.classList.remove('selected');
+        }
+   
     }
 
     startGame = () => {
@@ -171,22 +180,6 @@ class GameController {
 
         const parentElement = targetButton.parentNode;
         parentElement.classList.add('selected');
-    }
-
-    setOptionsListener() {
-        optionButtons.forEach(btn => {
-
-            btn.addEventListener('click', (e) => {
-                this.handleUserPick(e.target);
-            });
-        })
-    }
-    
-    setUserSelectListener() {
-        userSelectForm.addEventListener('submit', (e) => {
-            e.preventDefault();
-            this.handleUserSelectForm(e);
-        });
     }
 };
 

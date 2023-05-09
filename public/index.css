@@ -867,14 +867,14 @@ button {
         border-radius: .3125rem;
       }
 
-    .system-notice--game.won, .system-notice--game.fail {
+    .system-notice--game.won p, .system-notice--game.fail p {
       color: var(--white);
     }
 
-    .system-notice--game.won {
+    .system-notice--game.won p {
       background-color: var(--success);
     }
-    .system-notice--game.fail {
+    .system-notice--game.fail p {
       background-color: var(--error);
     }
 

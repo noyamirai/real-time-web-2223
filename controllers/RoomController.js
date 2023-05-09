@@ -78,7 +78,7 @@ class RoomController {
     listRoomUsers = (roomObject) => {
 
         if (!roomObject || Object.keys(roomObject).length == 0) {
-            return {};
+            return [];
         }
 
         const usernamesInRoom = Object.keys(roomObject).map(key => {

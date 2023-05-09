@@ -2,15 +2,33 @@ const messages = document.querySelector('[data-message-list]');
 
 export function setMessageInChat (data, currentUser) {
 
-    if (data.recon && data.recon_by == currentUser) {
+    if (data.recon && data.recon_by == currentUser)
         return;
-    }
 
-    const htmlString = getMessageHtml(data);
+    let htmlString = getMessageHtml(data);
 
     const messageElement = document.createElement("li");
+
     if (data.type == 'system_message') {
         messageElement.classList.add('system-notice');   
+        
+        if (data.gameResult) {
+            messageElement.classList.add('system-notice--game');
+            
+            if (data.gameResult != 'tie' && (data.gameResult.winner.username == currentUser || data.gameResult.loser.username == currentUser)) {
+
+                if (data.gameResult.winner.username == currentUser) {
+                    messageElement.classList.add('won');
+                    htmlString = htmlString.replace(`<strong>${currentUser}</strong> wins`, '<strong>you</strong> won!');
+                } else {
+                    messageElement.classList.add('fail')
+                }
+
+            } else if (data.gameResult != 'tie') {
+                messageElement.classList.add('won')
+            }
+        }
+
     } else if (data.type == 'chat_message') {
         messageElement.classList.add('message');
         messageElement.id = data.sender.username;

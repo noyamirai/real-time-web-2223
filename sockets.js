@@ -45,10 +45,16 @@ export default (io, socket) => {
         const numUsers = room ? room.size : 0;
 
         if (wasConnectedBefore) {
+            console.log('user was connected before');
             users[roomCode][username] = roomController.getUserFromBackup(username);
             users[roomCode][username].socketId = socket.id;
 
-            if (roomController.wasAdminBefore(username)) {
+            const currentAdmin = roomController.getAdmin(users[roomCode]);
+
+            console.log('current admin is: ' + currentAdmin.username);
+            console.log('was admin before: ' + roomController.wasAdminBefore(username));
+
+            if (roomController.wasAdminBefore(username) && !currentAdmin) {
                 isAdmin = true;
             }
             
@@ -62,14 +68,16 @@ export default (io, socket) => {
             }
         }
 
+        leaderboard[roomCode][username] = 0;
+
         io.to(`${roomCode}`).emit('ROOM_USERS', users[roomCode]);
         const currentUser = users[roomCode][username];
 
         // If admin or first user in room
         if (currentUser.is_admin) {
-            socket.emit('SET_ADMIN', username);
+            io.to(`${users[roomCode][username].socketId}`).emit('SET_ADMIN', username);
         } else {
-            socket.emit('SET_DEFAULT_USER', username);
+            io.to(`${users[roomCode][username].socketId}`).emit('SET_DEFAULT_USER', username);
         }
 
         // create/update backup of all users in room
@@ -108,21 +116,12 @@ export default (io, socket) => {
         const targetUser = users[roomCode][obj.targetUser];
         const targetedBy = users[roomCode][obj.targetedBy.username];
 
-        // TODO: save battle with x users amount 
-
         io.to(`${targetUser.socketId}`).emit('START_GAME');
         io.to(`${targetedBy.socketId}`).emit('START_GAME');
-
     });
 
-    // socket.on('ROUND_UPDATE', (roundN) => {
-    //     console.log('moving to next round: ' + roundN);
-    //     if (!playerChoices[roomCode].hasOwnProperty(`round_${roundN}`))
-    //         playerChoices[roomCode][`round_${roundN}`] = {};
-    // });
-
     socket.on('RPS_SELECTION', (submission, roundN, leaderboardObj) => {
-        console.log(`times up! -> check choices for round ${roundN}`);
+        console.log(`checking round ${roundN} for ${username}`);
 
         // round doesnt exist yet
         if (!playerChoices[roomCode].hasOwnProperty(`round_${roundN}`))
@@ -137,7 +136,6 @@ export default (io, socket) => {
         // check new amount of choices
         const updatedAmount = Object.keys(playerChoices[roomCode][`round_${roundN}`]).length;
 
-        // TODO: for x amount
         if (updatedAmount == 2) {
             
             const result = rpsController.getResults(
@@ -145,12 +143,14 @@ export default (io, socket) => {
                 playerChoices[roomCode][`round_${roundN}`].player2
             );
 
-            console.log(result);
             playerChoices[roomCode][`round_${roundN}`] = result;
 
-            leaderboard[roomCode] = leaderboardObj;
+            if (Object.keys(leaderboardObj).length > 0) {
+                leaderboard[roomCode] = leaderboardObj;
+            }
             
             const usersInRoom = roomController.listRoomUsers(users[roomCode]);
+
             usersInRoom.forEach(username => {
                 let increasePoint = false;
 
@@ -166,26 +166,116 @@ export default (io, socket) => {
                 }
             });
 
-            console.log(leaderboard[roomCode]);
-
-            const userArray = Object.entries(leaderboard[roomCode]);
-            console.log(userArray);
-
-            const usersWithThreePoints = userArray.filter(([user, points]) => points === 3);
-
-            console.log(usersWithThreePoints);
+            const usersWithThreePoints = Object.entries(leaderboard[roomCode])
+            .filter(([user, points]) => {
+                return points === 3;
+            })
+            .map(([user, points]) => {
+                return user;
+            });
 
             if (usersWithThreePoints.length > 0) {
                 console.log('GAME OVER!!!');
-                console.log('winner: ' + leaderboard[roomCode][usersWithThreePoints[0]]);
+
+                const winner = users[roomCode][usersWithThreePoints[0]].username;
+                io.in(`${roomCode}`).emit('MESSAGE_IN_CHAT', { 
+                    type: 'system_message', 
+                    gameResult: playerChoices[roomCode][`round_${roundN}`],
+                    message: `Game finished: ${winner} is the apex predator!`
+                });
+
+                io.in(`${roomCode}`).emit("GAME_FINISHED", 
+                    leaderboard[roomCode]
+                );
                 
             } else {
                 // only if theres no player with 3 wins
                 playerChoices[roomCode][`round_${roundN + 1}`] = {};
 
+                let resultMessage = `Round ${roundN} finished: `;
+                let setNewAdmin = false;
+
+                if (result == 'tie') {
+                    resultMessage += '<strong>draw</strong>'
+                } else {
+                    setNewAdmin = true;
+                    resultMessage += `<strong>${playerChoices[roomCode][`round_${roundN}`].winner.username}</strong> wins`;
+                }
+
+                if (setNewAdmin) {
+                    const winningUsername = playerChoices[roomCode][`round_${roundN}`].winner.username;
+                    const currentAdmin = roomController.getAdmin(users[roomCode]);
+
+                    if (winningUsername != currentAdmin.username) {
+                        users[roomCode][winningUsername].is_admin = true;
+                        users[roomCode][currentAdmin.username].is_admin = false;
+
+                        roomController.roomUsersBackup(users[roomCode]);
+
+                        io.in(`${roomCode}`).emit('SET_ADMIN', playerChoices[roomCode][`round_${roundN}`].winner.username);
+                        io.to(`${roomCode}`).emit('ROOM_USERS', users[roomCode]);
+                    }
+                    
+                }
+
+                io.in(`${roomCode}`).emit('MESSAGE_IN_CHAT', { 
+                    type: 'system_message', 
+                    gameResult: playerChoices[roomCode][`round_${roundN}`],
+                    message: resultMessage
+                });
+
+                io.in(`${roomCode}`).emit("GAME_RESULT", 
+                    playerChoices[roomCode][`round_${roundN}`],
+                    (roundN + 1)
+                );
+
             }
             
         }
+    });
+
+    socket.on('RESTART_LOBBY', () => {
+
+        console.log('restart lobby');
+
+        Object.keys(leaderboard[roomCode]).forEach((user) => {
+            leaderboard[roomCode][user] = 0;
+        });
+
+        playerChoices[roomCode] = {};
+
+        io.in(`${roomCode}`).emit('ROUND_UPDATE', 1);
+
+        io.in(`${roomCode}`).emit('MESSAGE_IN_CHAT', { 
+            type: 'system_message', 
+            message: 'New game started!'
+        });
+
+        const currentAdmin = roomController.getAdmin(users[roomCode]);
+        io.to(`${currentAdmin.socketId}`).emit('START_GAME_UI');
+
+    });
+
+    socket.on('CLEAR_ROOM', () => {
+
+        io.in(`${roomCode}`).emit('MESSAGE_IN_CHAT', { 
+            type: 'system_message', 
+            message: 'Session over... bye bye!'
+        });
+
+        broadcastLeftMessage = false;
+
+        io.in(`${roomCode}`).emit('EXIT_ROOM');
+
+        // const socketsInRoom = io.sockets.adapter.rooms.get(`${roomCode}`);
+
+        // // Loop through each socket and disconnect them from the room
+        // if (socketsInRoom) {
+        //     socketsInRoom.forEach(socketId => {
+        //         io.sockets.sockets.get(socketId).leave(`${roomCode}`);
+        //     });
+        // }
+
     });
 
     socket.on('disconnect', () => {
@@ -206,8 +296,11 @@ export default (io, socket) => {
                     message: `${username} reconnected` 
                 });
 
-                socket.broadcast.to(`${roomCode}`).emit("ROUND_UPDATE", Object.keys(playerChoices[roomCode]).length);
-                socket.broadcast.to(`${roomCode}`).emit("LEADERBOARD", leaderboard[roomCode]);
+                io.to(`${users[roomCode][username].socketId}`).emit("ROUND_UPDATE", (Object.keys(playerChoices[roomCode]).length == 0 ? 1 : Object.keys(playerChoices[roomCode]).length));
+                io.to(`${users[roomCode][username].socketId}`).emit("LEADERBOARD", leaderboard[roomCode]);
+
+                // socket.broadcast.to(`${roomCode}`).emit("ROUND_UPDATE", Object.keys(playerChoices[roomCode]).length);
+                // socket.broadcast.to(`${roomCode}`).emit("LEADERBOARD", leaderboard[roomCode]);
                 
             } else {
                 socket.leaveAll();
@@ -216,9 +309,6 @@ export default (io, socket) => {
                 let usernamesInRoom = roomController.listRoomUsers(users[roomCode]);
 
                 if (broadcastLeftMessage && (usernamesInRoom.length - 1) > 0) {
-
-                    // still some users in room -> show message
-                    console.log('show left chat message');
 
                     // check if user who left was admin -> set new admin if so
                     if (roomController.wasAdminBefore(username)) {
