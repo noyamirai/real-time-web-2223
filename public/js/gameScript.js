@@ -1,8 +1,6 @@
 import statesHandler from "./statesHandler.js";
 
-const userSelectForm = document.querySelector('[data-user-select]');
 const optionButtons = document.querySelectorAll('[data-character-select-btn]');
-
 const StatesHandler = new statesHandler();
 
 class GameController {
@@ -15,40 +13,28 @@ class GameController {
         this.leaderboardObj = {};
     }
 
-    updateUserObject = (obj) => {
+    setUserObject = (obj) => {
         this.currentUserObject = obj;
     }
 
-    updateRoomUsers = (users) => {
+    setRoomUsers = (users) => {
         this.roomUsers = users;
     }
 
-    updateRoundCount = (count) => {
+    setGameRound = (count) => {
         this.roundCount = count;
     }
 
-    updateLeaderboard = (obj) => {
+    setLeaderboard = (obj) => {
         this.leaderboardObj = obj;
     }
 
-    setStartGameCountdown = () => {
+    startGameCountdown = () => {
         const gameBoard = document.querySelector('[data-game-board]');
-        gameBoard.classList.add('game--message');
+        const timerData = StatesHandler.setTimerUI('Get ready to fight', 3);
 
-        const gameMessageEl = document.querySelector('#system_message');
-        const headingEl = document.createElement('h3');
-        const headingText = 'Get ready to fight!';
-
-        headingEl.innerHTML = headingText;
-        gameMessageEl.appendChild(headingEl);
-
-        const countText = document.createElement('p');
-        countText.id = 'countText';
-        let count = 3;
-        countText.innerHTML = count;
-        gameMessageEl.appendChild(countText);
-
-        gameMessageEl.classList.remove('hide');
+        const countText = timerData.text;
+        let count = timerData.count;
 
         const countdown = setInterval(() => {
             count--;
@@ -66,7 +52,7 @@ class GameController {
                     gameBoard.classList.remove('game--message');
                     gameBoard.classList.add('game--select');
 
-                    this.showHands();
+                    this.toggleHands();
 
                 }, 500);
             }
@@ -74,25 +60,11 @@ class GameController {
         }, 1000);
     }
 
-    setSelectCountdown = () => {
-
+    startSelectChoiceCountdown = () => {
         const gameBoard = document.querySelector('[data-game-board]');
-        gameBoard.classList.add('game--message');
-
-        const gameMessageEl = document.querySelector('#system_message');
-        const headingEl = document.createElement('h3');
-        const headingText = 'Make a choice';
-
-        headingEl.innerHTML = headingText;
-        gameMessageEl.appendChild(headingEl);
-
-        const countText = document.createElement('p');
-        countText.id = 'countText';
-        let count = 5;
-        countText.innerHTML = count;
-        gameMessageEl.appendChild(countText);
-
-        gameMessageEl.classList.remove('hide');
+        const timerData = StatesHandler.setTimerUI('Make a choice', 5);
+        const countText = timerData.text;
+        let count = timerData.count;
 
         const countdown = setInterval(() => {
             count--;
@@ -107,7 +79,7 @@ class GameController {
                     clearInterval(countdown);
 
                     StatesHandler.hideAndClearSystemMessage();
-                    this.hideHands();
+                    this.toggleHands(false);
 
                     gameBoard.classList.remove('game--select');
                     gameBoard.classList.add('game--message');
@@ -129,41 +101,38 @@ class GameController {
                     );
                 }, 500);
             }
-
         }, 1000);
-
     }
 
-    hideHands = () => {
+    toggleHands = (show = true) => {
         const handSelectForm = document.querySelector('[data-character-select]');
-        handSelectForm.classList.add('hide'); 
+        
+        if (show) {
+            handSelectForm.classList.remove('hide');
+
+            this.resetHandSelection();
+            this.startSelectChoiceCountdown();
+
+        } else {
+            handSelectForm.classList.add('hide'); 
+        }
     }
 
-    showHands = () => {
-        const handSelectForm = document.querySelector('[data-character-select]');
-        handSelectForm.classList.remove('hide');
-
-        this.resetHandPicks();
-
-        this.setSelectCountdown();
-    }
-
-    resetHandPicks = () => {
+    resetHandSelection = () => {
         const handPick = document.querySelector('[data-character-select-container].selected');
 
         if (handPick) {
             handPick.classList.remove('selected');
         }
-   
     }
 
     startGame = () => {
         StatesHandler.hideAdminUIs();
         StatesHandler.hideAndClearSystemMessage();
-        this.setStartGameCountdown();
+        this.startGameCountdown();
     }
 
-    handleUserSelectForm = () => {
+    handleGameTargetSelection = () => {
         const selectedUsername = document.querySelector('input[name="username"]:checked');
 
         this.socket.emit('START_GAME', {
@@ -172,7 +141,7 @@ class GameController {
         });
     }
 
-    handleUserPick = (targetButton) => {
+    handleUserHandPick = (targetButton) => {
         optionButtons.forEach(btn => {
             const parentElement = btn.parentNode;
             btn.textContent = 'select';

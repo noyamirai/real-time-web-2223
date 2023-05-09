@@ -41,7 +41,7 @@ fetch(`/user/${ESI}`)
     socket.emit('JOIN_ROOM', result.connected);
 
     addChatListeners(socket, currentUser, avatarUrl);
-    gameController.updateUserObject({username: currentUser, avatarUrl: avatarUrl});
+    gameController.setUserObject({username: currentUser, avatarUrl: avatarUrl});
 })
 
 socket.on('SET_ADMIN', (username) => {
@@ -77,12 +77,11 @@ socket.on('SET_ADMIN', (username) => {
 
 socket.on('ROOM_USERS', (users) => {
     allUsersInRoom = users;
-    gameController.updateRoomUsers(allUsersInRoom);
+    gameController.setRoomUsers(allUsersInRoom);
 })
 
 socket.on('SET_DEFAULT_USER', (username) => {
     const adminUser = getAdminUser(allUsersInRoom);
-    console.log(adminUser);
 
     StatesHandler.setGameMasterLabel(adminUser.username);
 
@@ -122,7 +121,7 @@ socket.on('GAME_RESULT', (resultData, nextRound) => {
     console.log(resultData);
 
     console.log('going to next round : ' + nextRound );
-    gameController.updateRoundCount(nextRound);
+    gameController.setGameRound(nextRound);
 
     if (resultData == 'tie') {
         console.log('GAME TIED');
@@ -141,7 +140,7 @@ socket.on('GAME_RESULT', (resultData, nextRound) => {
 });
 
 socket.on('ROUND_UPDATE', (count) => {
-    gameController.updateRoundCount(count);
+    gameController.setGameRound(count);
 });
 
 socket.on('GAME_FINISHED', (leaderboard) => {
@@ -155,7 +154,7 @@ socket.on('GAME_FINISHED', (leaderboard) => {
 });
 
 socket.on('LEADERBOARD', (leaderboardObj) => {
-    gameController.updateLeaderboard(leaderboardObj);
+    gameController.setLeaderboard(leaderboardObj);
 });
 
 socket.on('EXIT_ROOM', () => {
@@ -182,7 +181,7 @@ gameOverBtns.forEach(btn => {
 
 userSelectForm.addEventListener('submit', (e) => {
     e.preventDefault();
-    gameController.handleUserSelectForm(e);
+    gameController.handleGameTargetSelection(e);
 });
 
 const pickContainers = document.querySelectorAll('[data-character-select-container]');
@@ -190,7 +189,7 @@ const pickContainers = document.querySelectorAll('[data-character-select-contain
 pickContainers.forEach(container => {
     container.addEventListener('click', (e) => {
         const btn = container.querySelector('button');
-        gameController.handleUserPick(btn);
+        gameController.handleUserHandPick(btn);
     });
 });
 
@@ -201,8 +200,9 @@ if (copyTexts.length > 0) {
     copyTexts.forEach((copyText) => {
 
         copyText.addEventListener('click', () => {
-            const textToCopy = copyText.textContent;
+            const textToCopy = copyText.querySelector('[data-text-to-copy]').textContent;
             navigator.clipboard.writeText(textToCopy)
+            
             .then(() => {
                 tooltip.textContent = "Code copied!";
                 tooltip.classList.add('tooltip--success');

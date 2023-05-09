@@ -1,6 +1,5 @@
 class statesHandler {
     
-
     setGameMasterLabel = (username) => {
         const adminUserSpan = document.querySelector('[data-admin-username]');
         adminUserSpan.innerHTML = `<span data-admin-username>${username}</span> is the game master this round`;
@@ -17,6 +16,28 @@ class statesHandler {
         textEl.innerHTML = text;
         gameMessageEl.appendChild(textEl);
         gameMessageEl.classList.remove('hide');
+    }
+
+    setTimerUI = (heading, startCount) => {
+        const gameBoard = document.querySelector('[data-game-board]');
+        gameBoard.classList.add('game--message');
+
+        const gameMessageEl = document.querySelector('#system_message');
+        const headingEl = document.createElement('h3');
+        const headingText = heading;
+
+        headingEl.innerHTML = headingText;
+        gameMessageEl.appendChild(headingEl);
+
+        const countText = document.createElement('p');
+        countText.id = 'countText';
+        let count = startCount;
+        countText.innerHTML = count;
+        gameMessageEl.appendChild(countText);
+
+        gameMessageEl.classList.remove('hide');
+
+        return { text: countText, count: count};
     }
 
     removeSetupLoader = (time) => {
@@ -67,9 +88,7 @@ class statesHandler {
         userSelectForm.appendChild(submitBtn);
 
         const selectOpponentUI = document.querySelector('[data-select_opponent-ui]');
-        // console.log(selectOpponentUI);
         selectOpponentUI.classList.remove('hide');
-        // console.log(selectOpponentUI);
     }
 
     hideAdminUIs = () => {
@@ -89,7 +108,6 @@ class statesHandler {
         if (hideMessage && !systemMessage.className.includes('hide')) {
             systemMessage.classList.add('hide');
         }
-
     }
 
     showGameOverBtns = () => {

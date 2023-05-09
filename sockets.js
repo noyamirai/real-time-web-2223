@@ -1,5 +1,6 @@
 import RPSController from "./controllers/RPSController.js";
 import RoomController from "./controllers/RoomController.js";
+
 const users = {};
 const playerChoices = {};
 const leaderboard = {};
@@ -35,7 +36,6 @@ export default (io, socket) => {
         if (!wasConnectedBefore && usernamesInRoom.length > 0 && usernamesInRoom.includes(username)) {            
             socket.emit('ERROR', { type: 'username_taken' });
             broadcastLeftMessage = false;
-
             return;
         }
 
