@@ -192,12 +192,42 @@ pickContainers.forEach(container => {
         const btn = container.querySelector('button');
         gameController.handleUserPick(btn);
     });
-})
-// optionButtons.forEach(btn => {
-//     btn.addEventListener('click', (e) => {
-//         gameController.handleUserPick(e.target);
-//     });
-// })
+});
+
+const copyTexts = document.querySelectorAll('[data-copy-text]');
+const tooltip = document.querySelector('[data-tooltip]');
+
+if (copyTexts.length > 0) {
+    copyTexts.forEach((copyText) => {
+
+        copyText.addEventListener('click', () => {
+            const textToCopy = copyText.textContent;
+            navigator.clipboard.writeText(textToCopy)
+            .then(() => {
+                tooltip.textContent = "Code copied!";
+                tooltip.classList.add('tooltip--success');
+                tooltip.classList.remove('tooltip--fail');
+
+                setTimeout(() => {
+                    tooltip.textContent = "Click to copy code";
+                    tooltip.classList.remove('tooltip--success');
+                }, 2000);
+            })
+            .catch((err) => {
+                tooltip.textContent = "Something went wrong";
+                console.error('Error copying text:', err);
+                tooltip.classList.add('tooltip--fail');
+                tooltip.classList.remove('tooltip--success');
+
+                setTimeout(() => {
+                    tooltip.textContent = "Click to copy code";
+                    tooltip.classList.remove('tooltip--fail');
+                }, 2000);
+            });
+        });
+
+    })
+}
 
 function getAdminUser(allUsers) {
     const adminKey = Object.keys(allUsers).filter(key => allUsers[key].is_admin);

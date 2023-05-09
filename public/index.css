@@ -217,6 +217,69 @@ main {
   width: calc(100% - 25rem);
 }
 
+.copy {
+  position: relative;
+  cursor: pointer;
+}
+
+ .tooltip {
+  position: absolute;
+  top: -27px;
+  left: 50%;
+  right: 0;
+
+  background-color: var(--text-color);
+  width: max-content;
+  display: flex;
+  text-align: center;
+  transform: translate(-50%, 20px);
+  height: 20px;
+
+  align-items: center;
+  justify-content: center;
+  padding: 0 8px;
+
+  border-radius: 4px;
+
+  opacity: 0;
+
+  transition: all 250ms ease-in-out;
+}
+
+.tooltip::after {
+  content: "";
+  position: absolute;
+  left: 50%;
+  bottom: -5px;
+  transform: translateX(-50%);
+  border-left: 12px solid transparent;
+  border-right: 12px solid transparent;
+  border-top: 8px solid var(--text-color);
+
+  transition: all 250ms ease-in-out;
+}
+
+.tooltip--success {
+  background-color: var(--success);
+}
+
+.tooltip--success::after {
+    border-top: 8px solid var(--success);
+}
+
+.tooltip--fail {
+  background-color: var(--error);
+}
+
+.tooltip--error::after {
+    border-top: 8px solid var(--error);
+}
+
+.copy:hover .tooltip {
+  opacity: 100%;
+  transform: translate(-50%, 0);
+}
+
 .onboarding main {
     max-width: 28rem;
 }

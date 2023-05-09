@@ -48,7 +48,10 @@
 
         <header class="gulag__header">
             <h2>Gulag chat</h2>
-            <p><%= roomCode %></p>
+            <p class="copy" data-copy-text>
+                <span data-tooltip class="tooltip">Click to copy code</span>
+                <%= roomCode %>
+            </p>
         </header>
 
         <section class="gulag__chat">
