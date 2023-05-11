@@ -82,7 +82,7 @@ export default (io, socket) => {
         // create/update backup of all users in room
         roomController.roomUsersBackup(users[roomCode]);
 
-        console.log(`${username} has joined the ${roomCode} chat! ✋`);
+        console.log(`${username} has joined the ${roomCode} chat! by socket id: ${socket.id}`);
 
         // if there are now more than 1 users in room, trigger start game UI
         if (Object.keys(users[roomCode]).length > 1) {
@@ -266,6 +266,8 @@ export default (io, socket) => {
     });
 
     socket.on('disconnect', () => {
+        console.log(`${username} socket: ${users[roomCode][username].socketId}`);
+        console.log(`client socket: ${socket.id}`);
         console.log(`${username} disconnected from socket`);
 
         // update connection state
@@ -288,7 +290,7 @@ export default (io, socket) => {
                 io.to(`${users[roomCode][username].socketId}`).emit("LEADERBOARD", leaderboard[roomCode]);
                 
             // player disconnected :sad:
-            } else {
+            } else if (users[roomCode][username].socketId == socket.id) {
                 socket.leaveAll();
 
                 let newAdmin;

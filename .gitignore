@@ -4,6 +4,7 @@ temp/*
 !.gitkeep
 ./static
 /static
+./src/rooms.json
 
 node.log
 
