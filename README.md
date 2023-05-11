@@ -10,7 +10,7 @@ The winner of the first game becomes the next Game Master, and the first player 
 
 So, gather your friends, join a room, and get ready to compete in a game of strategy, luck, and survival. May the odds be ever in your favor!
 
-<!-- ![WFUT - App preview](./docs/assets/WFUT-app_preview.png) -->
+![Game preview](./docs/assets/game-preview.png)
 
 ## :computer: Features
 
@@ -23,11 +23,11 @@ This game offers the following features (for now):
 | Create game room        | :white_check_mark: |
 | Share game room key                | :white_check_mark:        |
 | Enter game room via key      | :white_check_mark: |
-| Game master selects 1v1 victim                 | :hourglass:        |
-| Play rock paper scissors                 | :hourglass:        |
+| Game master selects 1v1 victim                 | :white_check_mark:        |
+| Play rock paper scissors                 | :white_check_mark:        |
 | Use power-ups                 | :hourglass:        |
-| Restart game session                | :hourglass:        |
-| End game session                | :hourglass:        |
+| Restart game session                | :white_check_mark:        |
+| End game session                | :white_check_mark:        |
 
 
 ## :zap: Quickstart

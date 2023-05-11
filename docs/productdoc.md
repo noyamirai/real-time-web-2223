@@ -49,3 +49,19 @@ Some additional requirements that I could think of with less priority than the r
 - Users must be able to equip power-ups
 - Admin must be able to end the entire session for everyone
 - Admin must be able to restart the session for everyone
+
+## Design
+text
+
+![Onboarding design](./assets/onboarding.png)
+![Lobby design - Not started](./assets/lobby-game_not_started.png)
+![Lobby design - Game started](./assets/lobby-game_started.png)
+
+## Development
+text
+
+## Data Life Cycle
+
+text
+
+![Data Life Cycle](./assets/data_life_cycle.jpg)
