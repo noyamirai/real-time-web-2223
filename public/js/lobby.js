@@ -115,7 +115,7 @@ socket.on('SET_DEFAULT_USER', (username) => {
     StatesHandler.setGameMasterLabel(adminUser.username);
 
     if (!gameStarted) {
-        StatesHandler.setGameMessage('Waiting for game master to start');
+        StatesHandler.setGameMessage('Waiting for game to start');
     }
 
     StatesHandler.removeSetupLoader(1000);

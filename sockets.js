@@ -266,9 +266,13 @@ export default (io, socket) => {
     });
 
     socket.on('disconnect', () => {
-        // console.log(`${username} socket: ${users[roomCode][username].socketId}`);
-        // console.log(`client socket: ${socket.id}`);
-        console.log(`${username} disconnected from socket`);
+        console.log(roomCode);
+        
+        console.log(users[roomCode][username]);
+
+        console.log(`client socket: ${socket.id}`);
+
+        console.log(`${username} disconnected from socket with id ${users[roomCode][username].socketId}`);
 
         // update connection state
         roomController.setConnectionState(false);
@@ -290,7 +294,7 @@ export default (io, socket) => {
                 io.to(`${users[roomCode][username].socketId}`).emit("LEADERBOARD", leaderboard[roomCode]);
                 
             // player disconnected :sad:
-            } else if (users[roomCode][username].socketId && users[roomCode][username].socketId == socket.id) {
+            } else if (users[roomCode][username].socketId == socket.id) {
                 socket.leaveAll();
 
                 let newAdmin;
