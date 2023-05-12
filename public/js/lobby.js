@@ -27,7 +27,6 @@ let currentRoom;
 let avatarUrl;
 let allUsersInRoom;
 let gameStarted = false;
-let prevAdmin;
 
 fetch(`/user/${ESI}`)
 .then(res => res.json())
@@ -189,46 +188,6 @@ socket.on('ROUND_UPDATE', (count) => {
     console.log(count);
     gameController.setGameRound(count);
 });
-
-// socket.on('GAME_FINISHED', (resultData, leaderboard, messageData) => {
-//     console.log(leaderboard);
-//     const adminUser = getAdminUser(allUsersInRoom);
-
-//     let player1SearchKey;
-//     let player2SearchKey;
-
-//     let isDraw = false;
-
-//     if (resultData.tie) {
-//         player1SearchKey = 'player1';
-//         player2SearchKey = 'player2';
-
-//         isDraw = true;
-//     } else {
-//         const keys = Object.keys(resultData);
-
-//         player1SearchKey = keys[0];
-//         player2SearchKey = keys[1];
-//     }
-
-//     gameController.startFightScene(
-//         player1SearchKey, 
-//         player2SearchKey, 
-//         resultData, 
-//         nextRound, 
-//         messageData,
-//         adminMessage,
-//         isDraw
-//     );
-
-//     if (adminUser.username == currentUser) {
-//         const fightScene = document.querySelector('[data-fight-scene]');
-//         fightScene.classList.add('hide');
-
-//         StatesHandler.showGameOverBtns();
-//     }
-
-// });
 
 socket.on('LEADERBOARD', (leaderboardObj) => {
     gameController.setLeaderboard(leaderboardObj);

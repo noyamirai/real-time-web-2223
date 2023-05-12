@@ -163,12 +163,6 @@ export default (io, socket) => {
 
                 const winner = users[roomCode][usersWithThreePoints[0]].username;
 
-                // io.in(`${roomCode}`).emit('MESSAGE_IN_CHAT', { 
-                //     type: 'system_message', 
-                //     gameResult: playerChoices[roomCode][`round_${roundN}`],
-                //     message: `Game finished: ${winner} is the apex predator!`
-                // });
-
                 io.in(`${roomCode}`).emit("GAME_RESULT", 
                     playerChoices[roomCode][`round_${roundN}`],
                     leaderboard[roomCode],
@@ -200,6 +194,7 @@ export default (io, socket) => {
                     const winningUsername = playerChoices[roomCode][`round_${roundN}`].winner.username;
                     const currentAdmin = roomController.getAdmin(users[roomCode]);
 
+                    // change admin user
                     if (winningUsername != currentAdmin.username) {
                         users[roomCode][winningUsername].is_admin = true;
                         users[roomCode][currentAdmin.username].is_admin = false;
@@ -280,7 +275,6 @@ export default (io, socket) => {
         console.log(username);
 
         console.log(users[roomCode][username]);
-        console.log('hiii');
 
         console.log(`client socket: ${socket.id}`);
 

@@ -58,9 +58,6 @@ class GameController {
 
                     StatesHandler.hideAndClearSystemMessage();
 
-                    // gameBoard.classList.remove('game--message');
-                    // gameBoard.classList.add('game--select');
-
                     this.toggleHands();
 
                 }, 500);
@@ -156,87 +153,83 @@ class GameController {
 
         fightScene.classList.remove('hide');
 
-        setTimeout(() => {
-            player1ChoiceFigure.classList.add('active');
-            player1ChoiceFigure.classList.add('active--text');
+        const timeouts = [300, 500, 800, 1400];
 
-            setTimeout(() => {
-                versusText.classList.add('active');
-
-                setTimeout(() => {
+        this.chainTimeouts(timeouts, (index) => {
+            switch (index) {
+                case 0:
+                    player1ChoiceFigure.classList.add('active');
+                    player1ChoiceFigure.classList.add('active--text');
+                    break;
+                case 1:
+                    versusText.classList.add('active');
+                    break;
+            
+                case 2:
                     player2ChoiceFigure.classList.add('active');
                     player2ChoiceFigure.classList.add('active--text');
+                    break;
+                case 3:
+                    if (isDraw) {
+                        versusText.querySelector('h3').textContent = 'DRAW';
 
-                    setTimeout(() => {
+                    } else {
+                        const loserFigure = document.querySelector(`[data-player-choices]#${resultData.loser.username}`);
+                        loserFigure.classList.add('hide');
 
-                        if (isDraw) {
-                            versusText.querySelector('h3').textContent = 'DRAW';
+                        versusText.querySelector('h3').textContent = `${resultData.winner.username} wins!`;
+                        fightScene.classList.add('win');
 
-                        } else {
-                            const loserFigure = document.querySelector(`[data-player-choices]#${resultData.loser.username}`);
-                            loserFigure.classList.add('hide');
+                        if (resultData.winner.username == this.currentUserObject.username) {
+                            jsConfetti.addConfetti();
+                        }
+                    }
 
-                            versusText.querySelector('h3').textContent = `${resultData.winner.username} wins!`;
-                            fightScene.classList.add('win');
+                    setMessageInChat(messageData, this.currentUserObject.username);
 
-                            if (resultData.winner.username == this.currentUserObject.username) {
-                                jsConfetti.addConfetti();
+                    if (adminMessage && adminMessage.newAdmin) {
+                        setMessageInChat(adminMessage, this.currentUserObject.username);
+                    }
+
+                    const adminUser = this.getAdminUser(this.roomUsers);
+
+                    if (messageData.message.includes('Game finished') && adminUser.username == this.currentUserObject.username) {
+
+                        setTimeout(() => {
+                            fightScene.classList.add('hide');
+                            StatesHandler.showGameOverBtns();
+                        }, 1800);
+
+                    } else {
+
+                        this.setGameRound(nextRound); 
+                        
+                        setTimeout(() => {
+                            if (adminUser.username == this.currentUserObject.username) {
+                                fightScene.classList.add('hide');
                             }
-                        }
 
-                        setMessageInChat(messageData, this.currentUserObject.username);
-
-                        if (adminMessage && adminMessage.newAdmin) {
-                            setMessageInChat(adminMessage, this.currentUserObject.username);
-                        }
-
-                        const adminUser = this.getAdminUser(this.roomUsers);
-
-                        if (messageData.message.includes('Game finished')) {
-
-
-                            setTimeout(() => {
+                            if (resultData.tie) {
+                                console.log('GAME TIED');
+                                this.startGame();
+                            } else {
+                                console.log('admin user is: ' + adminUser.username);
 
                                 if (adminUser.username == this.currentUserObject.username) {
-                                    fightScene.classList.add('hide');
-                                    StatesHandler.showGameOverBtns();
+                                    StatesHandler.setUserSelectForm(this.roomUsers, this.currentUserObject.username);
                                 }
-                               
-                            }, 1800);
+                            }
+                        
+                        }, 1800);
 
+                    }
+                    break;
+            
+                default:
+                    break;
+            }
+        });
 
-                        } else {
-
-                            console.log('going to next round : ' + nextRound );
-                            this.setGameRound(nextRound); 
-                            
-                            setTimeout(() => {
-                                if (adminUser.username == this.currentUserObject.username) {
-                                    fightScene.classList.add('hide');
-                                }
-
-                                if (resultData.tie) {
-                                    console.log('GAME TIED');
-                                    this.startGame();
-                                } else {
-
-                                    console.log('admin user is: ' + adminUser.username);
-
-                                    if (adminUser.username == this.currentUserObject.username) {
-                                        StatesHandler.setUserSelectForm(this.roomUsers, this.currentUserObject.username);
-                                    }
-
-                                }
-                            
-                            }, 1800);
-
-                        }
-
-
-                    }, 1400);
-                }, 800);
-            }, 500);
-        }, 300);
     }
 
     resetHandSelection = () => {
@@ -273,6 +266,18 @@ class GameController {
         targetButton.textContent = "selected";
         const parentElement = targetButton.parentNode;
         parentElement.classList.add('selected');
+    }
+
+    delay = (timeout) => {
+        return new Promise(resolve => setTimeout(resolve, timeout));
+    }
+
+    chainTimeouts = async (timeouts, callback) => {
+        for (let index = 0; index < timeouts.length; index++) {
+            const delay = timeouts[index];
+            await this.delay(delay);
+            callback(index);
+        }
     }
 };
 
