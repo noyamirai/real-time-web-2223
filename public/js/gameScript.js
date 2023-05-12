@@ -39,7 +39,6 @@ class GameController {
     }
 
     startGameCountdown = () => {
-        const gameBoard = document.querySelector('[data-game-board]');
         const timerData = StatesHandler.setTimerUI('Get ready to fight', 3);
 
         const countText = timerData.text;
