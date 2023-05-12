@@ -163,14 +163,20 @@ export default (io, socket) => {
 
                 const winner = users[roomCode][usersWithThreePoints[0]].username;
 
-                io.in(`${roomCode}`).emit('MESSAGE_IN_CHAT', { 
-                    type: 'system_message', 
-                    gameResult: playerChoices[roomCode][`round_${roundN}`],
-                    message: `Game finished: ${winner} is the apex predator!`
-                });
+                // io.in(`${roomCode}`).emit('MESSAGE_IN_CHAT', { 
+                //     type: 'system_message', 
+                //     gameResult: playerChoices[roomCode][`round_${roundN}`],
+                //     message: `Game finished: ${winner} is the apex predator!`
+                // });
 
-                io.in(`${roomCode}`).emit("GAME_FINISHED", 
-                    leaderboard[roomCode]
+                io.in(`${roomCode}`).emit("GAME_RESULT", 
+                    playerChoices[roomCode][`round_${roundN}`],
+                    leaderboard[roomCode],
+                    { 
+                        type: 'system_message', 
+                        gameResult: playerChoices[roomCode][`round_${roundN}`],
+                        message: `Game finished: ${winner} is the apex predator!`
+                    }
                 );
                 
             // No winner yet

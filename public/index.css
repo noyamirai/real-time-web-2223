@@ -1130,6 +1130,8 @@ button {
     /* background-color: pink; */
     flex-direction: column;
     position: relative;
+
+    transition: all 250ms ease-in-out;
   }
 
   .fightscene__vs {
@@ -1196,6 +1198,11 @@ button {
       transition: all 250ms ease-in-out;
     }
 
+    .fightscene.win figure:not(.hide) {
+      margin-top: 20%;
+      margin-left: 5%;
+    }
+
     .fightscene figcaption {
       position: absolute;
       width: auto;
@@ -1249,7 +1256,7 @@ button {
 
 
     .fightscene.win .fightscene__vs {
-      top: 20%;
+      top: 35%;
     }
     .fightscene.win .loser {
       display: none;
