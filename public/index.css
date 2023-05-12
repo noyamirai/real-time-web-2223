@@ -624,9 +624,9 @@ button {
   }
 
   .system-notice form .btn {
-    background-color: #fff;
+    background-color: var(--primary-color);
     position: absolute;
-    color: #000;
+    color: #FFF;
     left: 50%;
     bottom: -19px;
     width: max-content;
@@ -831,26 +831,33 @@ button {
     }
 
     .game--select {
-      display: flex;
-      align-items: flex-end;
-      justify-content: flex-end;
+      display: flex!important;
+      align-items: flex-end!important;
+      /* justify-content: flex-end!important; */
+    }
+
+    .game--select .system-notice {
+      position: absolute;
+      top: 10%;
     }
 
       .game__characters {
-        /* display: flex;
-        gap: 1.5rem; */
-
-        position: absolute;
-        display: flex;
-        gap: 1.5rem;
-        right: 0;
-        bottom: -40%;
+          position: absolute;
+          display: flex;
+          gap: 1.5rem;
+          right: 0;
+          height: 50%;
+          width: 100%;
       }
 
-      .game__characters:has(.game__character.selected) .game__character:not(.selected) {
-        /* background-color: blue; */
+      /* .game__characters:has(.game__character.selected) .game__character:not(.selected) {
+        background-color: blue;
         transform: translateY(10rem);
-      }
+      } */
+
+      /* .game__character.selected {
+        transform: translateY(-10rem);
+      } */
 
       .game__character.selected .btn {
         background-color: hsl(136.04deg 100% 35.95%);
@@ -863,24 +870,26 @@ button {
         flex-direction: column;
         justify-content: space-between;
 
+        width: 33.33%;
+
         margin-bottom: -2.2rem;
         cursor: pointer;
         transition: all 250ms ease-in-out;
       }
 
         .game__character > img {
-          width: 80%;
+          width: 50%;
           margin-top: var(--big-padding);
         }
 
         .game__character.game__character--rock img {
-          width: 60%;
+          width: 35%;
         }
-        .game__character.game__character--paper img {
+        /* .game__character.game__character--paper img {
           width: 80%;
-        }
+        } */
         .game__character.game__character--scissors img {
-          width: 70%;
+          width: 40%;
         }
 
         .game__character.game__character--scissors .btn {
@@ -1101,4 +1110,147 @@ button {
       top: 0;
       left: 0;
       pointer-events: none;
+    }
+
+
+  .fightscene {
+    width: 100%;
+    height: 100%;
+    /* background-color: blue; */
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    align-items: flex-start;
+
+  }
+
+  .fightscene figure {
+    display: flex;
+    width: 70%;
+    /* background-color: pink; */
+    flex-direction: column;
+    position: relative;
+  }
+
+  .fightscene__vs {
+    position: absolute;
+    top: 55%;
+    left: 50%;
+
+    font-weight: 700;
+    font-size: 2rem;
+    transform: translate(-50%, -50%);
+    height: 4rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0 .8rem;
+    border-radius: .625rem;
+    background-color: var(--background-color);
+
+    transition: all 250ms ease-in-out;
+    opacity: 0;
+
+    rotate: 180deg;
+    transform-origin: left top;
+  }
+
+  .fightscene__vs.active {
+    opacity: 100%;
+    transform: translate(-50%, -50%) scale(1);
+    animation: slam .34s ease-in-out forwards;
+  }
+
+  @keyframes slam {
+      0% {
+        scale: 20;
+        rotate: 180deg;
+      }
+
+      60% {
+        scale: .7;
+      }
+
+      80% {
+        scale: 1.1;
+      }
+
+      100% {
+        scale: 1;
+        rotate: 0deg;
+      }
+    }
+
+  .fightscene__vs h3 {
+    /* color: var(--primary-color); */
+  }
+
+    .fightscene picture {
+      display: block;
+    }
+
+    .fightscene picture img {
+      width: 100%;
+      margin-left: -25%;
+      opacity: 0;
+      transition: all 250ms ease-in-out;
+    }
+
+    .fightscene figcaption {
+      position: absolute;
+      width: auto;
+      background: var(--primary-color);
+      bottom: -20px;
+      height: 40px;
+      padding: 0 20px;
+      display: flex;
+      align-items: center;
+      border-radius: 40px;
+      left: 10%;
+
+      opacity: 0;
+
+      transform: translateX(-200%);
+
+      transition: all 250ms ease-in-out;
+    }
+
+    .fightscene figure:last-of-type figcaption {
+      left: unset;
+      right: 10%;
+      /* bottom: unset;
+      top: -20px; */
+
+      transform: translateX(200%);
+    }
+
+    .fightscene figure.active--text figcaption {
+      opacity: 100%;
+      transform: translateX(0);
+    }
+
+    .fightscene figure.active img {
+      opacity: 100%;
+      transform: translateX(0);
+    }
+
+    .fightscene figure img {
+      transform: translateX(-100%);
+    }
+
+    .fightscene figure:last-of-type {
+      margin-left: auto;
+    }
+
+
+    .fightscene figure:last-of-type picture {
+      transform: scaleX(-1);
+    }
+
+
+    .fightscene.win .fightscene__vs {
+      top: 20%;
+    }
+    .fightscene.win .loser {
+      display: none;
     }

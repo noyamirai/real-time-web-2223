@@ -139,7 +139,7 @@ class RoomController {
         usersInRoom.forEach(username => {
             let increasePoint = false;
 
-            if (result != 'tie') {
+            if (!result.tie) {
                 if (result.winner.username == username)
                     increasePoint = true;
             }

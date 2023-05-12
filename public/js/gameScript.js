@@ -49,8 +49,8 @@ class GameController {
 
                     StatesHandler.hideAndClearSystemMessage();
 
-                    gameBoard.classList.remove('game--message');
-                    gameBoard.classList.add('game--select');
+                    // gameBoard.classList.remove('game--message');
+                    // gameBoard.classList.add('game--select');
 
                     this.toggleHands();
 
@@ -61,7 +61,6 @@ class GameController {
     }
 
     startSelectChoiceCountdown = () => {
-        const gameBoard = document.querySelector('[data-game-board]');
         const timerData = StatesHandler.setTimerUI('Make a choice', 5);
         const countText = timerData.text;
         let count = timerData.count;
@@ -81,8 +80,6 @@ class GameController {
                     StatesHandler.hideAndClearSystemMessage();
                     this.toggleHands(false);
 
-                    gameBoard.classList.remove('game--select');
-                    gameBoard.classList.add('game--message');
 
                     let selectedButton = document.querySelector('[data-character-select-container].selected button');
 
@@ -106,14 +103,20 @@ class GameController {
 
     toggleHands = (show = true) => {
         const handSelectForm = document.querySelector('[data-character-select]');
-        
+        const gameBoard = document.querySelector('[data-game-board]');
+
         if (show) {
             handSelectForm.classList.remove('hide');
+
+            gameBoard.classList.add('game--select');
+            gameBoard.classList.remove('game--message');
 
             this.resetHandSelection();
             this.startSelectChoiceCountdown();
 
         } else {
+            gameBoard.classList.remove('game--select');
+            gameBoard.classList.add('game--message');
             handSelectForm.classList.add('hide'); 
         }
     }
@@ -129,6 +132,7 @@ class GameController {
     startGame = () => {
         StatesHandler.hideAdminUIs();
         StatesHandler.hideAndClearSystemMessage();
+        StatesHandler.resetFightScenes();
         this.startGameCountdown();
     }
 

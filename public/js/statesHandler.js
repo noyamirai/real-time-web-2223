@@ -125,6 +125,20 @@ class statesHandler {
         btnContainer.classList.remove('hide');
     }
 
+    resetFightScenes = () => {
+        const fightScene = document.querySelector('[data-fight-scene]');
+
+        const playerChoices = document.querySelectorAll('[data-player-choices]');
+        playerChoices.forEach(element => {
+            element.classList.remove('hide');
+            element.classList.remove('active');
+            element.classList.remove('active--text');
+        });
+
+        fightScene.classList.remove('win');
+        fightScene.classList.add('hide');
+    }
+
 }
 
 export default statesHandler;

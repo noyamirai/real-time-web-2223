@@ -143,32 +143,123 @@ socket.on('ERROR', (errorData) => {
 socket.on('START_GAME', () => {
     console.log('START GAME!!!');
     gameStarted = true;
+
     gameController.startGame();
 });
 
-socket.on('GAME_RESULT', (resultData, nextRound) => {
+socket.on('GAME_RESULT', (resultData, nextRound, messageData, adminMessage) => {
     console.log(resultData);
+    console.log('ANIMATION');
 
-    console.log('going to next round : ' + nextRound );
-    gameController.setGameRound(nextRound);
+    const fightScene = document.querySelector('[data-fight-scene]');    
 
-    if (resultData == 'tie') {
-        console.log('GAME TIED');
-        gameController.startGame();
+    const player1ChoiceFigure = document.querySelector('[data-player1-choice]');
+    const player1ChoiceImg = document.querySelector('[data-player1-choice-img]');
+    const player1UsernameTag = document.querySelector('[data-player1-name]');
+
+    const player2ChoiceFigure = document.querySelector('[data-player2-choice]');
+    const player2ChoiceImg = document.querySelector('[data-player2-choice-img]');
+    const player2UsernameTag = document.querySelector('[data-player2-name]');
+
+    const versusText = document.querySelector('[data-fight-versus]');
+
+    let player1SearchKey;
+    let player2SearchKey;
+
+    let isDraw = false;
+
+    if (resultData.tie) {
+        player1SearchKey = 'player1';
+        player2SearchKey = 'player2';
+
+        isDraw = true;
     } else {
+        const keys = Object.keys(resultData);
 
-        const adminUser = getAdminUser(allUsersInRoom);
-        console.log('admin user is: ' + adminUser.username);
-
-        if (adminUser.username == currentUser) {
-            StatesHandler.setUserSelectForm(allUsersInRoom, currentUser);
-        }
-
+        player1SearchKey = keys[0];
+        player2SearchKey = keys[1];
     }
+
+    versusText.querySelector('h3').textContent = 'VS';
+
+    player1ChoiceFigure.id = resultData[player1SearchKey].username;
+    player2ChoiceFigure.id = resultData[player2SearchKey].username;
+
+    player1UsernameTag.textContent = `${resultData[player1SearchKey].username}'s pick`;
+    player2UsernameTag.textContent = `${resultData[player2SearchKey].username}'s pick`;
+
+    player1ChoiceImg.src = `/public/images/${resultData[player1SearchKey].selection}-horizontal.svg`;
+    player2ChoiceImg.src = `/public/images/${resultData[player2SearchKey].selection}-horizontal.svg`;
+
+    fightScene.classList.remove('hide');
+
+    setTimeout(() => {
+        player1ChoiceFigure.classList.add('active');
+        player1ChoiceFigure.classList.add('active--text');
+
+        setTimeout(() => {
+            versusText.classList.add('active');
+
+            setTimeout(() => {
+                player2ChoiceFigure.classList.add('active');
+                player2ChoiceFigure.classList.add('active--text');
+
+                setTimeout(() => {
+
+                    if (isDraw) {
+                        
+                        versusText.querySelector('h3').textContent = 'DRAW';
+
+                    } else {
+                        const loserFigure = document.querySelector(`[data-player-choices]#${resultData.loser.username}`);
+                        loserFigure.classList.add('hide');
+
+                        versusText.querySelector('h3').textContent = `${resultData.winner.username} wins!`;
+                        fightScene.classList.add('win');
+                    }
+
+                    setMessageInChat(messageData, currentUser);
+
+                    if (adminMessage.newAdmin) {
+                        setMessageInChat(adminMessage, currentUser);
+                    }
+
+                    console.log('going to next round : ' + nextRound );
+                    gameController.setGameRound(nextRound); 
+                    
+                    setTimeout(() => {
+                        const adminUser = getAdminUser(allUsersInRoom);
+                        if (adminUser.username == currentUser) {
+                            fightScene.classList.add('hide');
+                        }
+
+                        if (resultData.tie) {
+                            console.log('GAME TIED');
+                            gameController.startGame();
+                        } else {
+
+                            const adminUser = getAdminUser(allUsersInRoom);
+                            console.log('admin user is: ' + adminUser.username);
+
+                            if (adminUser.username == currentUser) {
+                                StatesHandler.setUserSelectForm(allUsersInRoom, currentUser);
+                            }
+
+                        }
+                    
+                    }, 1800);
+
+
+                }, 1400);
+            }, 800);
+        }, 500);
+    }, 300);
+
 
 });
 
 socket.on('ROUND_UPDATE', (count) => {
+    console.log(count);
     gameController.setGameRound(count);
 });
 
@@ -177,6 +268,9 @@ socket.on('GAME_FINISHED', (leaderboard) => {
     const adminUser = getAdminUser(allUsersInRoom);
 
     if (adminUser.username == currentUser) {
+        const fightScene = document.querySelector('[data-fight-scene]');
+        fightScene.classList.add('hide');
+
         StatesHandler.showGameOverBtns();
     }
 

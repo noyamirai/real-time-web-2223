@@ -180,9 +180,10 @@ export default (io, socket) => {
                 let resultMessage = `Round ${roundN} finished: `;
                 let setNewAdmin = false;
 
-                if (result == 'tie') {
+                if (result.tie) {
                     resultMessage += '<strong>draw</strong>'
                 } else {
+
                     setNewAdmin = true;
                     resultMessage += `<strong>${playerChoices[roomCode][`round_${roundN}`].winner.username}</strong> wins`;
                 }
@@ -208,23 +209,26 @@ export default (io, socket) => {
                     
                 }
 
-                io.in(`${roomCode}`).emit('MESSAGE_IN_CHAT', { 
-                    type: 'system_message', 
-                    gameResult: playerChoices[roomCode][`round_${roundN}`],
-                    message: resultMessage
-                });
+                let adminMessage;
+                
+                if (newAdminUsername) {
+                    adminMessage = `<i class="fa-solid fa-crown"></i> ${newAdminUsername} has been promoted to game master` ;
+                }
 
                 io.in(`${roomCode}`).emit("GAME_RESULT", 
                     playerChoices[roomCode][`round_${roundN}`],
-                    (roundN + 1)
-                );
-
-                if (setNewAdmin) {
-                    io.in(`${roomCode}`).emit("MESSAGE_IN_CHAT", {
+                    (roundN + 1),
+                    { 
                         type: 'system_message', 
-                        message: `<i class="fa-solid fa-crown"></i> ${newAdminUsername} has been promoted to game master` 
-                    });
-                }
+                        gameResult: playerChoices[roomCode][`round_${roundN}`],
+                        message: resultMessage
+                    },
+                    { 
+                        newAdmin: newAdminUsername ? true : false,
+                        type: 'system_message', 
+                        message: adminMessage
+                    }
+                );
 
             }
             
@@ -267,12 +271,14 @@ export default (io, socket) => {
 
     socket.on('disconnect', () => {
         console.log(roomCode);
-        
+        console.log(username);
+
         console.log(users[roomCode][username]);
+        console.log('hiii');
 
         console.log(`client socket: ${socket.id}`);
 
-        console.log(`${username} disconnected from socket with id ${users[roomCode][username].socketId}`);
+        console.log(`${username} disconnected from socket`);
 
         // update connection state
         roomController.setConnectionState(false);
@@ -294,7 +300,7 @@ export default (io, socket) => {
                 io.to(`${users[roomCode][username].socketId}`).emit("LEADERBOARD", leaderboard[roomCode]);
                 
             // player disconnected :sad:
-            } else if (users[roomCode][username].socketId == socket.id) {
+            } else if (users[roomCode][username] && users[roomCode][username].socketId == socket.id) {
                 socket.leaveAll();
 
                 let newAdmin;

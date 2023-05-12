@@ -6,7 +6,7 @@ class RPSController {
         const player2Choice = player2.selection; 
 
         if (player1Choice === player2Choice) {
-            return 'tie';
+            return { tie: true, player1: player1, player2: player2 };
         } else if (
             (player1Choice === "rock" && player2Choice === "scissors") ||
             (player1Choice === "paper" && player2Choice === "rock") ||

@@ -11,11 +11,13 @@ export function setMessageInChat (data, currentUser) {
 
     if (data.type == 'system_message') {
         messageElement.classList.add('system-notice');   
+
+        console.log(data);
         
         if (data.gameResult) {
             messageElement.classList.add('system-notice--game');
             
-            if (data.gameResult != 'tie' && (data.gameResult.winner.username == currentUser || data.gameResult.loser.username == currentUser)) {
+            if (!data.gameResult.tie && (data.gameResult.winner.username == currentUser || data.gameResult.loser.username == currentUser)) {
 
                 if (data.gameResult.winner.username == currentUser) {
                     messageElement.classList.add('won');
@@ -24,7 +26,7 @@ export function setMessageInChat (data, currentUser) {
                     messageElement.classList.add('fail')
                 }
 
-            } else if (data.gameResult != 'tie') {
+            } else if (!data.gameResult.tie) {
                 messageElement.classList.add('won')
             }
         }
