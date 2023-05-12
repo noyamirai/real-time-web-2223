@@ -5,11 +5,21 @@ class statesHandler {
         adminUserSpan.innerHTML = `<span data-admin-username>${username}</span> is the game master this round`;
     }
 
-    setGameMessage = (message) => {
+    setGameMessage = (message, headingData = null) => {
         const gameBoard = document.querySelector('[data-game-board]');
         gameBoard.classList.add('game--message');
 
         const gameMessageEl = document.querySelector('#system_message');
+
+        if (headingData && headingData.hasHeading) {
+            const heading = headingData.text
+            const headingEl = document.createElement('h3');
+            const headingText = heading;
+
+            headingEl.innerHTML = headingText;
+            gameMessageEl.appendChild(headingEl);
+        }
+
         const textEl = document.createElement('p');
         const text = message;
 

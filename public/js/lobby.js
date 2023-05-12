@@ -95,7 +95,7 @@ socket.on('SET_ADMIN', (username) => {
 
             // Show empty message if game hasnt started and theres only 1 player
             if (!gameStarted && Object.keys(allUsersInRoom).length == 1) {
-                StatesHandler.setGameMessage('Invite friends');
+                StatesHandler.setGameMessage('Invite your friends!', { hasHeading: true, text: "Not enough players"});
             }
  
             StatesHandler.removeSetupLoader(1000);

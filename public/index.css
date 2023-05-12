@@ -369,10 +369,12 @@ button {
 }
 
 .btn--exit {
-      position: absolute;
+    position: absolute;
     top: 0;
     left: 0;
     width: auto;
+
+    background-color: #000;
 }
 
 .btn--nav.active {
@@ -618,7 +620,8 @@ button {
     background-color: var(--dark-grey);
     font-weight: 700;
 
-    font-size: 1rem;
+    font-size: .875rem;
+    /* font-size: 1rem; */
 
     padding: .875rem .75rem;
     border-radius: var(--border-radius);
@@ -679,7 +682,7 @@ button {
 }
 
 .gulag h1, h2 {
-
+  font-size: 1.2rem;
   color: var(--text-color);
 }
 
@@ -703,7 +706,8 @@ button {
       margin-top: .1875rem;
       font-weight: 700;
       border-radius: .225rem;
-      font-size: .775rem;
+      font-size: .875rem;
+      /* font-size: .775rem; */
       padding: .1875rem .375rem;
       background-color: var(--background-color);
     }
@@ -1016,11 +1020,21 @@ button {
       font-size: 1.25rem;
       text-transform: uppercase;
       font-weight: 800;
-      padding: 1rem .75rem;
+      padding: 1rem;
+      /* padding: 1rem .75rem; */
       border-radius: .425rem;
 
       max-width: 60%;
       background-color: var(--background-color);
+    }
+
+    .system-notice h3 {
+      margin-bottom: .3125rem;
+    }
+
+    .system-notice h3 + p {
+      text-transform: initial;
+      font-weight: 700;
     }
 
     .hidden-text {
